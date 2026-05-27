@@ -1,0 +1,165 @@
+{
+  "tasks": [
+    {
+      "id": "t1",
+      "title": "Riset kompetitor UI/UX",
+      "description": "Analisa 5 kompetitor utama, fokus pada onboarding flow dan navigasi.",
+      "column": "backlog",
+      "priority": "med",
+      "tag": "tag-amber",
+      "tagLabel": "Riset",
+      "assignee": "AR",
+      "assigneeColor": "blue",
+      "dueDate": "2026-06-10",
+      "checklist": [],
+      "createdAt": "2026-05-01T08:00:00.000Z",
+      "updatedAt": "2026-05-01T08:00:00.000Z"
+    },
+    {
+      "id": "t2",
+      "title": "Definisikan user persona untuk v2",
+      "description": "Buat minimal 3 persona berdasarkan data riset pengguna aktif.",
+      "column": "backlog",
+      "priority": "low",
+      "tag": "tag-purple",
+      "tagLabel": "Fitur",
+      "assignee": "BK",
+      "assigneeColor": "teal",
+      "dueDate": "2026-06-20",
+      "checklist": [],
+      "createdAt": "2026-05-02T09:00:00.000Z",
+      "updatedAt": "2026-05-02T09:00:00.000Z"
+    },
+    {
+      "id": "t3",
+      "title": "Buat wireframe halaman login",
+      "description": "Desain wireframe lo-fi untuk flow login, register, dan forgot password.",
+      "column": "todo",
+      "priority": "high",
+      "tag": "tag-blue",
+      "tagLabel": "Desain",
+      "assignee": "AR",
+      "assigneeColor": "blue",
+      "dueDate": "2026-05-28",
+      "checklist": [
+        { "id": "ch1", "text": "Login screen", "done": true },
+        { "id": "ch2", "text": "Register screen", "done": true },
+        { "id": "ch3", "text": "Forgot password", "done": false },
+        { "id": "ch4", "text": "Review dengan tim", "done": false }
+      ],
+      "createdAt": "2026-05-03T10:00:00.000Z",
+      "updatedAt": "2026-05-03T10:00:00.000Z"
+    },
+    {
+      "id": "t4",
+      "title": "Setup database schema",
+      "description": "Definisikan schema PostgreSQL untuk user, tasks, projects, dan audit log.",
+      "column": "todo",
+      "priority": "high",
+      "tag": "tag-teal",
+      "tagLabel": "Backend",
+      "assignee": "BK",
+      "assigneeColor": "teal",
+      "dueDate": "2026-05-30",
+      "checklist": [
+        { "id": "ch5", "text": "User table", "done": true },
+        { "id": "ch6", "text": "Tasks table", "done": false },
+        { "id": "ch7", "text": "Migrations", "done": false }
+      ],
+      "createdAt": "2026-05-04T11:00:00.000Z",
+      "updatedAt": "2026-05-04T11:00:00.000Z"
+    },
+    {
+      "id": "t5",
+      "title": "Integrasi API autentikasi",
+      "description": "Implementasi JWT auth dengan refresh token strategy.",
+      "column": "inprogress",
+      "priority": "high",
+      "tag": "tag-teal",
+      "tagLabel": "Backend",
+      "assignee": "DM",
+      "assigneeColor": "purple",
+      "dueDate": "2026-06-05",
+      "checklist": [
+        { "id": "ch8", "text": "JWT generation", "done": true },
+        { "id": "ch9", "text": "Refresh token", "done": false }
+      ],
+      "createdAt": "2026-05-05T12:00:00.000Z",
+      "updatedAt": "2026-05-05T12:00:00.000Z"
+    },
+    {
+      "id": "t6",
+      "title": "Komponen navbar responsif",
+      "description": "Build navbar yang adaptive untuk mobile, tablet, dan desktop.",
+      "column": "inprogress",
+      "priority": "high",
+      "tag": "tag-coral",
+      "tagLabel": "Frontend",
+      "assignee": "CL",
+      "assigneeColor": "coral",
+      "dueDate": "2026-05-27",
+      "checklist": [
+        { "id": "ch10", "text": "Desktop layout", "done": true },
+        { "id": "ch11", "text": "Mobile hamburger", "done": true },
+        { "id": "ch12", "text": "Tablet breakpoint", "done": true },
+        { "id": "ch13", "text": "Accessibility audit", "done": false },
+        { "id": "ch14", "text": "Cross-browser test", "done": false }
+      ],
+      "createdAt": "2026-05-06T13:00:00.000Z",
+      "updatedAt": "2026-05-06T13:00:00.000Z"
+    },
+    {
+      "id": "t7",
+      "title": "Halaman profil pengguna",
+      "description": "Implementasi halaman profil dengan edit mode dan upload avatar.",
+      "column": "review",
+      "priority": "med",
+      "tag": "tag-coral",
+      "tagLabel": "Frontend",
+      "assignee": "CL",
+      "assigneeColor": "coral",
+      "dueDate": "2026-05-26",
+      "checklist": [
+        { "id": "ch15", "text": "View mode", "done": true },
+        { "id": "ch16", "text": "Edit mode", "done": true },
+        { "id": "ch17", "text": "Avatar upload", "done": true },
+        { "id": "ch18", "text": "Validasi form", "done": true },
+        { "id": "ch19", "text": "Code review", "done": false }
+      ],
+      "createdAt": "2026-05-07T14:00:00.000Z",
+      "updatedAt": "2026-05-07T14:00:00.000Z"
+    },
+    {
+      "id": "t8",
+      "title": "Setup CI/CD pipeline",
+      "description": "Konfigurasi GitHub Actions untuk auto-deploy ke staging dan production.",
+      "column": "done",
+      "priority": "high",
+      "tag": "tag-teal",
+      "tagLabel": "Backend",
+      "assignee": "DM",
+      "assigneeColor": "purple",
+      "dueDate": "2026-05-20",
+      "checklist": [
+        { "id": "ch20", "text": "Staging pipeline", "done": true },
+        { "id": "ch21", "text": "Production pipeline", "done": true },
+        { "id": "ch22", "text": "Slack notif", "done": true }
+      ],
+      "createdAt": "2026-05-08T08:00:00.000Z",
+      "updatedAt": "2026-05-08T08:00:00.000Z"
+    }
+  ],
+  "columns": [
+    { "id": "backlog", "title": "Backlog", "order": 0 },
+    { "id": "todo", "title": "Siap dikerjakan", "order": 1 },
+    { "id": "inprogress", "title": "Sedang berjalan", "order": 2 },
+    { "id": "review", "title": "Review", "order": 3 },
+    { "id": "done", "title": "Selesai", "order": 4 }
+  ],
+  "members": [
+    { "id": "AR", "name": "Ari Ramadhan", "color": "blue", "role": "UI/UX Designer" },
+    { "id": "BK", "name": "Budi Kurniawan", "color": "teal", "role": "Backend Engineer" },
+    { "id": "CL", "name": "Cici Lestari", "color": "coral", "role": "Frontend Engineer" },
+    { "id": "DM", "name": "Dian Maharani", "color": "purple", "role": "Full Stack Engineer" }
+  ]
+}

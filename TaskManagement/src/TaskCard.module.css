@@ -1,0 +1,158 @@
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 11px 12px;
+  cursor: grab;
+  transition:
+    border-color 0.15s,
+    transform 0.12s,
+    background 0.12s;
+  user-select: none;
+}
+
+.card:hover {
+  border-color: var(--border-default);
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.tagRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tag,
+.priority {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  letter-spacing: 0.03em;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.checklist {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.checklistBar {
+  flex: 1;
+  height: 3px;
+  background: var(--border-subtle);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.checklistFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.checklistLabel {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  min-width: 28px;
+  text-align: right;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footerLeft,
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.due {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-weight: 500;
+}
+
+.dueOk {
+  color: var(--text-tertiary);
+  background: var(--bg-active);
+}
+
+.dueSoon {
+  color: var(--priority-med);
+  background: var(--priority-med-bg);
+}
+
+.dueToday {
+  color: var(--tag-coral);
+  background: var(--tag-coral-bg);
+}
+
+.dueOverdue {
+  color: var(--priority-high);
+  background: var(--priority-high-bg);
+}
+
+.actionBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition:
+    opacity 0.12s,
+    background 0.12s,
+    color 0.12s;
+}
+
+.card:hover .actionBtn {
+  opacity: 1;
+}
+
+.actionBtn:hover {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+
+.deleteBtn:hover {
+  background: var(--priority-high-bg);
+  color: var(--priority-high);
+}
+
+.avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}

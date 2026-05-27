@@ -1,0 +1,29 @@
+.app {
+  display: grid;
+  height: 100vh;
+  overflow: hidden;
+  transition: grid-template-columns 0.25s ease;
+}
+
+.sidebarOpen {
+  grid-template-columns: var(--sidebar-w) 1fr;
+}
+
+.sidebarClosed {
+  grid-template-columns: 56px 1fr;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--bg-app);
+}
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

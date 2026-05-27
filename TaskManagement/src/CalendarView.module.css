@@ -1,0 +1,235 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.calendar {
+  padding: 20px 24px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.monthTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: capitalize;
+  flex: 1;
+}
+
+.navBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+
+.navBtn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.todayBtn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  transition: all 0.12s;
+}
+
+.todayBtn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.dayNames {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+}
+
+.dayName {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cell {
+  min-height: 80px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell:hover { background: var(--bg-hover); border-color: var(--border-default); }
+
+.otherMonth { opacity: 0.35; }
+
+.today {
+  border-color: var(--brand-border);
+  background: var(--brand-dim);
+}
+
+.selected {
+  border-color: var(--brand);
+  background: rgba(99,102,241,0.2);
+}
+
+.dayNum {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.today .dayNum {
+  color: var(--brand-hover);
+}
+
+.taskDots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: auto;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.more {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  line-height: 6px;
+}
+
+/* Panel */
+.panel {
+  background: var(--bg-surface);
+  overflow-y: auto;
+  padding: 20px 16px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.panelTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+.addDayBtn {
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--brand-border);
+  background: var(--brand-dim);
+  color: var(--brand-hover);
+  font-size: 12px;
+  transition: background 0.12s;
+}
+
+.addDayBtn:hover { background: rgba(99,102,241,0.25); }
+
+.panelEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.panelTasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panelTask {
+  display: flex;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg-elevated);
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.panelTask:hover { border-color: var(--border-default); background: var(--bg-hover); }
+
+.panelTaskAccent {
+  width: 3px;
+  flex-shrink: 0;
+}
+
+.panelTaskBody {
+  padding: 10px 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.panelTaskTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panelTaskMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.panelTaskAssignee {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  background: var(--bg-active);
+  padding: 1px 6px;
+  border-radius: 99px;
+  margin-left: auto;
+}
