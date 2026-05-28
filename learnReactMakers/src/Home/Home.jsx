@@ -97,7 +97,7 @@ function Home() {
     }
   }, [user.isLoggedIn]);
 
-  // Lifecycle demo
+  // Lifecycle
   useEffect(() => {
     console.log("Home mounted");
 

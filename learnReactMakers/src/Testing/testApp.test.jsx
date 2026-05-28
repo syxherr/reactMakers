@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import WeatherAppPage from "./WeatherAppPage";
-import { getWeatherEmoji } from "./WeatherAppPage";
+import WeatherAppPage from "../Weather/WeatherAppPage";
+import { getWeatherEmoji } from "../Weather/WeatherAppPage";
 import { MemoryRouter } from "react-router-dom";
 import Home from "../Home/Home";
 import { UserProvider } from "../post/context/UserContext";
