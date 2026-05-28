@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import useTaskStore from './useTaskStore'
 import styles from './Board.module.css'
+import { Helmet } from "react-helmet-async";
 
 const COLUMNS = [
   { id: 'todo',  label: 'To Do',         dot: '#888' },
@@ -191,6 +192,21 @@ export default function Board() {
   ]
 
   return (
+    <>
+    <Helmet>
+            <title>Tast Management</title>
+            <meta
+              name="description"
+              content="Manage your messy tasks "
+            />
+            <meta property="og:title" content="Luxora Shop — Electronics & Accessories" />
+            <meta
+              property="og:description"
+              content="Shop the latest electronics and accessories at Luxora."
+            />
+            <meta property="og:type" content="website" />
+            <link rel="canonical" href="https://board" />
+          </Helmet>
     <div className={styles.board}>
       {/* Toolbar */}
       <div className={styles.toolbar}>
@@ -224,5 +240,6 @@ export default function Board() {
         ))}
       </div>
     </div>
-  )
+    </>
+  );
 }

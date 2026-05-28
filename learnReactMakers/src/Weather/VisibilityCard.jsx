@@ -1,7 +1,7 @@
 export default function VisibilityCard({ hasError }) {
 
   if (hasError) {
-    throw new Error("Gagal memuat jarak pandang!");
+    throw new Error("Something went wrong. ");
   }
 
   return (

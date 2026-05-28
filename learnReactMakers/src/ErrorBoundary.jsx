@@ -32,7 +32,7 @@ export class ErrorBoundary extends React.Component {
             backdropFilter: "blur(12px)",
           }}
         >        
-        Something went wrong. {this.state.error?.message}
+        {this.state.error?.message}
 
         </div>
       );

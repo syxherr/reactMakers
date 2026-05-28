@@ -1,7 +1,7 @@
 export default function WindCard({ hasError }) {
 
   if (hasError) {
-    throw new Error("Gagal memuat kecepatan angin!");
+    throw new Error("Something went wrong.");
   }
 
   return (

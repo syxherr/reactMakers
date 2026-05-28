@@ -185,7 +185,6 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-// ─── ProductCard ──────────────────────────────────────────────────────────────
 
 interface ProductCardProps {
   product: Product;
@@ -199,7 +198,6 @@ function ProductCard({ product, onAdd }: ProductCardProps) {
       itemScope
       itemType="https://schema.org/Product"
     >
-      {/* Machine-readable product name for crawlers */}
       <meta itemProp="name" content={product.name} />
       <meta itemProp="category" content={product.category} />
 
@@ -216,7 +214,6 @@ function ProductCard({ product, onAdd }: ProductCardProps) {
           {product.name}
         </p>
 
-        {/* Schema.org Offer for price */}
         <div itemProp="offers" itemScope itemType="https://schema.org/Offer">
           <meta itemProp="priceCurrency" content="IDR" />
           <data
@@ -244,8 +241,6 @@ function ProductCard({ product, onAdd }: ProductCardProps) {
     </article>
   );
 }
-
-// ─── CartDrawer ───────────────────────────────────────────────────────────────
 
 interface CartDrawerProps {
   cart: CartItem[];
@@ -275,7 +270,7 @@ function CartDrawer({ cart, onClose, onChangeQty, onRemove }: CartDrawerProps) {
 
   return (
     <>
-      {/* Overlay: hidden from AT, closes drawer on click */}
+    
       <div
         className={styles.overlay}
         onClick={onClose}
@@ -366,7 +361,6 @@ function CartDrawer({ cart, onClose, onChangeQty, onRemove }: CartDrawerProps) {
   );
 }
 
-// ─── Luxora (Page) ────────────────────────────────────────────────────────────
 
 function Luxora() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -430,7 +424,7 @@ function Luxora() {
       </Helmet>
 
       <div className={styles.page}>
-        {/* ── Navigation ── */}
+        
         <nav className={styles.navbar} aria-label="Main navigation">
           <a href="/" className={styles.logo} aria-label="Luxora Shop home">
             ✦ Luxora Shop
@@ -451,8 +445,9 @@ function Luxora() {
           </button>
         </nav>
 
-        {/* ── Main content ── */}
         <main id="main-content">
+
+
           {/* Search & filters */}
           <section aria-label="Search and filter products" className={styles.filters}>
             <label htmlFor="product-search" className="sr-only">
@@ -482,7 +477,6 @@ function Luxora() {
             </div>
           </section>
 
-          {/* Product grid */}
           <section aria-label="Product listings" aria-live="polite">
             {filtered.length === 0 ? (
               <p className={styles.emptyMsg} role="status">
@@ -504,7 +498,6 @@ function Luxora() {
           </section>
         </main>
 
-        {/* ── Cart Drawer ── */}
         {isCartOpen && (
           <CartDrawer
             cart={cart}
@@ -514,7 +507,6 @@ function Luxora() {
           />
         )}
 
-        {/* ── Toast Notification ── */}
         {notification && (
           <div
             className={styles.toast}

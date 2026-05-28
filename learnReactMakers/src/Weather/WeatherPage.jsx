@@ -1,10 +1,10 @@
 import "../style/index.css";
-import PixelSnow from "../components/effect/PixelSnow";
+import PixelSnow from "../style/effect/PixelSnow";
 import React, { Suspense } from "react";
 import ErrorBoundary from "../ErrorBoundary";
 
 import SkeletonCard from "../style/SkeletonCard";
-import withComments from "../post/hocs/withComments";
+import withComments from "../hocs/withComments";
 import { lazy } from "react";
 
 export const WindCard = lazy(() => import("./WindCard"));

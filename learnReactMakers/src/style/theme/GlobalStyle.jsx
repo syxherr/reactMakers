@@ -20,6 +20,7 @@ const GlobalStyle = createGlobalStyle`
     /* ── Backgrounds ── */
     --bg:              ${({ theme }) => theme.bg};
     --bg-card:         ${({ theme }) => theme.bgCard};
+    --bg-card:         ${({ theme }) => theme.bgCard2};
     --bg-card-hover:   ${({ theme }) => theme.bgCardHover};
  
     /* ── Text ── */

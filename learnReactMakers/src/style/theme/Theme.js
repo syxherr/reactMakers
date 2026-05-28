@@ -9,6 +9,7 @@ export const darkTheme = {
   bg:          "#1e1a2e",
   bg2:          "#1e1a2e",
   bgCard:      "#312C51",
+  bgCard2:      "#2d2b55",
   textMuted:   "#d4d3da",
 
   navBar:           "#312C51",
@@ -40,6 +41,8 @@ export const lightTheme = {
   bg:          "#e9e1f9",
   bg2:          "#e3d8f8",
   bgCard:      "#f5f2fa",
+  bgCard2:      "#f3edfc",
+
   bgCardHover:  "#f7f4fc",
   textMuted:       "#9b8eaa",
   navBar:           "#f5f4f6",

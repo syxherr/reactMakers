@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { to: "/weather", label: "Weather App" },
   { to: "/post", label: "Post App" },
   { to: "/luxora", label: "Luxora Shop" },
-  { to: "/task-dashboard", label: "Task Dashboard" },
+  { to: "/dashboard", label: "Task Dashboard" },
 ];
 
 function NameForm() {
@@ -149,7 +149,7 @@ function Home() {
         <NameForm />
       ) : (
         <>
-          <h1 className="welcomeMessage" ref={headingRef} tabIndex={-1}>
+          <h1 className="welcomeMessage" ref={headingRef} >
             Hello,{" "}
             <span
               style={{ color: "var(--accent)" }}

@@ -11,7 +11,8 @@ import Navbar from "./Navbar";
 import LoadingPage from "./style/LoadingPage";
 const Home = lazy(() => import("./Home/Home"));
 const TodoPage = lazy(() => import("./Todo/TodoPage"));
-const WeatherApp = lazy(() => import("./Weather/WeatherAppPage"));
+const WeatherAppPage = lazy(() => import("./Weather/WeatherAppPage"));
+const WeatherPage = lazy(() => import("./Weather/WeatherPage"));
 const PostPage = lazy(() => import("./post/post/PostPage"));
 const LuxoraShop = lazy(() => import("./luxora/Pages/Luxora"));
 const TaskDashboard = lazy(() => import("./TaskManagement/Board"));
@@ -47,10 +48,11 @@ function App() {
             <Route path="/" element={<Home toggleTheme={toggleTheme} isDark={isDark} />}
             />
             <Route path="/todo" element={<TodoPage />} />
-            <Route path="/weather" element={<WeatherApp />} />
+            <Route path="/weather" element={<WeatherAppPage />} />
+            <Route path="/weatherUi" element={<WeatherPage />} />
             <Route path="/post" element={<PostPage />} />
             <Route path="/luxora" element={<LuxoraShop />} />
-            <Route path="/task-dashboard" element={<TaskDashboard />} />
+            <Route path="/dashboard" element={<TaskDashboard />} />
           </Routes>
         </Suspense>
 

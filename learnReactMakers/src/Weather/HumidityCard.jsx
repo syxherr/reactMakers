@@ -1,6 +1,6 @@
 export default function HumidityCard({ hasError }) {
   if (hasError) {
-    throw new Error("Gagal memuat kelembapan udara!");
+    throw new Error("Something went wrong. ");
   }
 
   return (
