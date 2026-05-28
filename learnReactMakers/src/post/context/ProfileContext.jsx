@@ -1,5 +1,6 @@
 import { createContext, useState } from "react";
-import { useUser } from "./useUser";
+import { useUser } from "../../hooks/useUser";
+
 
 export const ProfileContext = createContext(null);
 

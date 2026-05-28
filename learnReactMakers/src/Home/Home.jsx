@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import "../style/index.css";
 import React from "react";
-import { useUser } from "../post/context/useUser";
+import { useUser } from "../hooks/useUser";
 
 const NAV_ITEMS = [
   { to: "/todo", label: "Todo App" },

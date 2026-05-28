@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ProfileContext } from "../context/ProfileContext";
+import { ProfileContext } from "../post/context/ProfileContext";
 
 export function useProfile() {
   const ctx = useContext(ProfileContext);

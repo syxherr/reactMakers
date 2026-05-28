@@ -1,8 +1,8 @@
 import { Suspense, useState } from "react";
-import { usePosts } from "../hooks/UsePosts";
-import { useProfile } from "../hooks/UseProfile";
+import { usePosts } from "../../hooks/UsePosts";
+import { useProfile } from "../../hooks/UseProfile";
 import styles from "./PostPage.module.css";
-import withComments from "../hocs/withComments";
+import withComments from "../../hocs/withComments";
 import SkeletonCard from "../../style/SkeletonCard";
 import { ProfileProvider } from "../context/ProfileContext";
 import { PostsProvider } from "../context/PostsContext";

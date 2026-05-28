@@ -1,4 +1,4 @@
-import { useUser } from "./post/context/useUser";
+import { useUser } from "./hooks/useUser";
 import styles from "./Navbar.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 

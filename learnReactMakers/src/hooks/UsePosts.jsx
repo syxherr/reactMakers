@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { PostsContext } from "../context/PostsContext";
+import { PostsContext } from "../post/context/PostsContext";
 
 export function usePosts() {
   const ctx = useContext(PostsContext);
