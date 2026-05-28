@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../Todo/Todo.module.css";
+import styles from "../Todo.module.css";
 import { IoIosClose } from "react-icons/io";
 
 function TodoList({ todos, onDelete }) {

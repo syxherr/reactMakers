@@ -1,7 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import WeatherAppPage from "./WeatherAppPage";
 import { getWeatherEmoji } from "./WeatherAppPage";
+import { MemoryRouter } from "react-router-dom";
+import Home from "../Home/Home";
+import { UserProvider } from "../post/context/UserContext";
 
 vi.mock("swr", () => ({ default: vi.fn() }));
 import useSWR from "swr";
@@ -49,6 +52,16 @@ const mockForecast = {
 
 // ─── Helper mock SWR ──────────────────────────────────────────────────────────
 
+function renderHome() {
+  return render(
+    <MemoryRouter>
+      <UserProvider>
+        <Home />
+      </UserProvider>
+    </MemoryRouter>,
+  );
+}
+
 function mockSWR({ currentErr = null, loading = false } = {}) {
   useSWR.mockImplementation((url) => {
     if (url.includes("/weather")) {
@@ -70,6 +83,32 @@ function mockSWR({ currentErr = null, loading = false } = {}) {
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
+
+describe("HomeScreen", () => {
+  
+  it("menampilkan komponen Button dan Input", () => {
+    renderHome();
+    expect(screen.getByRole("button", { name: /enter/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/your name/i)).toBeInTheDocument();
+  });
+});
+
+it("nilai input berubah saat user mengetik", () => {
+  renderHome();
+  const input = screen.getByPlaceholderText(/your name/i);
+  fireEvent.change(input, { target: { value: "John Doe" } });
+  expect(input.value).toBe("John Doe");
+});
+
+it("klik tombol Enter dengan nama valid menampilkan home screen", async () => {
+  renderHome();
+  fireEvent.change(screen.getByPlaceholderText(/your name/i), {
+    target: { value: "Budi" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: /enter/i }));
+  expect(await screen.findByText(/halo/i)).toBeInTheDocument();
+  expect(await screen.findByText("Budi")).toBeInTheDocument();
+});
 
 describe("WeatherAppPage", () => {
   // ── R1: Search input & button ──────────────────────────────────────────────
@@ -113,7 +152,6 @@ describe("WeatherAppPage", () => {
       expect(await screen.findByText(/Bandung, ID/i)).toBeInTheDocument();
     });
   });
-
 
   // ── D5: weeklyData per hari ───────────────────────────────────────────────
   describe("D5 – weeklyData per minggu", () => {

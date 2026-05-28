@@ -1,5 +1,8 @@
 import React, { useReducer, useCallback } from "react";
 import styles from "./Luxora.module.css";
+import { Helmet } from "react-helmet-async";
+
+
 
 const PRODUCTS = [
   {
@@ -76,46 +79,80 @@ const PRODUCTS = [
   },
 ];
 
-const CATEGORIES = ["All", "Electronics", "Accessories"];
-const fmt = (n) => "Rp " + n.toLocaleString("id-ID");
+type Product = (typeof PRODUCTS)[0];
+type CartItem = Product & { qty: number };
 
-const initialState = {
-  cart: [],
+type State = {
+  cart: CartItem[];
+  filter: string;
+  search: string;
+  isCartOpen: boolean;
+  notification: { message: string } | null;
+};
+
+type Action =
+  | { type: "ADD_TO_CART"; product: (typeof PRODUCTS)[0] }
+  | { type: "REMOVE_FROM_CART"; id: number }
+  | { type: "CHANGE_QUANTITY"; id: number; delta: number }
+  | { type: "FILTER_CATEGORY"; value: string }
+  | { type: "SET_SEARCH"; value: string }
+  | { type: "TOGGLE_CART" }
+  | { type: "CLEAR_NOTIFICATION" };
+
+const CATEGORIES = ["All", "Electronics", "Accessories"];
+const fmt = (n: number): string => "Rp " + n.toLocaleString("id-ID");
+
+const CART_KEY = "luxora_cart";
+
+function loadCart() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+  
+}
+function saveCart(cart: CartItem[]): void{
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+
+}
+
+
+
+const initialState: State = {
+  cart: loadCart(),
   filter: "All",
   search: "",
   isCartOpen: false,
   notification: null,
 };
 
-function reducer(state, action) {
+function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "ADD_TO_CART": {
       const inCart = state.cart.find((item) => item.id === action.product.id);
       const newCart = inCart
         ? state.cart.map((item) =>
-            item.id === action.product.id
-              ? { ...item, qty: item.qty + 1 }
-              : item,
+            item.id === action.product.id ? { ...item, qty: item.qty + 1 } : item,
           )
         : [...state.cart, { ...action.product, qty: 1 }];
+      saveCart(newCart);
+      return {
+        ...state,
+        cart: newCart,
+        notification: { message: `${action.product.name} ditambahkan ke keranjang!` },
+      };
+    }
+ 
+    case "REMOVE_FROM_CART": {
+      const removedItem = state.cart.find((item) => item.id === action.id);
+      const newCart = state.cart.filter((item) => item.id !== action.id);
+      saveCart(newCart);
       return {
         ...state,
         cart: newCart,
         notification: {
-          message: `${action.product.name} ditambahkan ke keranjang!`,
-        },
-      };
-    }
-
-    case "REMOVE_FROM_CART": {
-      const removedItem = state.cart.find((item) => item.id === action.id);
-      return {
-        ...state,
-        cart: state.cart.filter((item) => item.id !== action.id),
-        notification: {
-          message: removedItem
-            ? `${removedItem.name} dihapus dari keranjang!`
-            : "Produk dihapus!",
+          message: removedItem ? `${removedItem.name} dihapus dari keranjang!` : "Produk dihapus!",
         },
       };
     }
@@ -126,16 +163,21 @@ function reducer(state, action) {
       const newQty = targetItem.qty + action.delta;
 
       //contoh reduce kalau qty habis, item langsung dihapus dari cart
-      if (newQty <= 0)
+      if (newQty <= 0) {
+        const newCart = state.cart.filter((item) => item.id !== action.id);
+        saveCart(newCart);
         return {
           ...state,
-          cart: state.cart.filter((item) => item.id !== action.id),
+          cart: newCart,
         };
+      }
+      const newCart = state.cart.map((item) =>
+        item.id === action.id ? { ...item, qty: newQty } : item,
+      );
+      saveCart(newCart);
       return {
         ...state,
-        cart: state.cart.map((item) =>
-          item.id === action.id ? { ...item, qty: newQty } : item,
-        ),
+        cart: newCart,
       };
     }
 
@@ -152,7 +194,19 @@ function reducer(state, action) {
       return state;
   }
 }
-function ProductCard({ product, onAdd }) {
+interface ProductCardProps {
+  product: Product;
+  onAdd: (product: Product) => void;
+}
+ 
+interface CartDrawerProps {
+  cart: CartItem[];
+  onClose: () => void;
+  onChangeQty: (id: number, delta: number) => void;
+  onRemove: (id: number) => void;
+}
+
+function ProductCard({ product, onAdd }: ProductCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardImg} style={{ background: product.color }}>
@@ -162,7 +216,7 @@ function ProductCard({ product, onAdd }) {
         <p className={styles.cardName}>{product.name}</p>
         <p className={styles.cardPrice}>{fmt(product.price)}</p>
         <p className={styles.cardSold}>🛒 {product.sold} Sold</p>
-        
+
         {/* 3. function dipanggil saat tombol diklik */}
         <button className={styles.addBtn} onClick={() => onAdd(product)}>
           + Keranjang
@@ -172,7 +226,7 @@ function ProductCard({ product, onAdd }) {
   );
 }
 
-function CartDrawer({ cart, onClose, onChangeQty, onRemove }) {
+function CartDrawer({ cart, onClose, onChangeQty, onRemove }: CartDrawerProps) {
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
   return (
@@ -248,18 +302,19 @@ function Luxora() {
       p.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const handleAdd = useCallback( //1. contoh nambah produk
-    (product) => dispatch({ type: "ADD_TO_CART", product }),
+  const handleAdd = useCallback(
+    //1. contoh nambah produk
+    (product: Product) => dispatch({ type: "ADD_TO_CART", product }),
     [],
   );
 
   const handleRemove = useCallback(
-    (id) => dispatch({ type: "REMOVE_FROM_CART", id }),
+    (id: number) => dispatch({ type: "REMOVE_FROM_CART", id }),
     [],
   );
 
   const handleChangeQty = useCallback(
-    (id, delta) => dispatch({ type: "CHANGE_QUANTITY", id, delta }),
+    (id: number, delta: number) => dispatch({ type: "CHANGE_QUANTITY", id, delta }),
     [],
   );
 
@@ -269,12 +324,12 @@ function Luxora() {
   );
 
   const handleSearch = useCallback(
-    (value) => dispatch({ type: "SET_SEARCH", value }),
+    (value: string) => dispatch({ type: "SET_SEARCH", value }),
     [],
   );
 
   const handleFilter = useCallback(
-    (value) => dispatch({ type: "FILTER_CATEGORY", value }),
+    (value: string) => dispatch({ type: "FILTER_CATEGORY", value }),
     [],
   );
 
@@ -283,15 +338,18 @@ function Luxora() {
   }
 
   return (
+    <>
+    <Helmet>
+      <title>Luxora Shop</title>
+      <meta name="description" content="Marketplace for electronics and accessories" />
+    </Helmet>
     <div className={styles.page}>
       <nav className={styles.navbar}>
-      
         <span className={styles.logo}>✦ Luxora Shop</span>
         <button className={styles.cartBtn} onClick={handleToggleCart}>
           Keranjang 🛒
           {totalItems > 0 && <span className={styles.badge}>{totalItems}</span>}
         </button>
-        
       </nav>
 
       <div className={styles.filters}>
@@ -331,6 +389,7 @@ function Luxora() {
         <div className={styles.toast}>✓ {notification.message}</div>
       )}
     </div>
+    </>
   );
 }
 export default React.memo(Luxora);

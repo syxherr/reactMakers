@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import "../style/index.css";
-import styles from "../Todo/Todo.module.css";
-import TodoList from "../components/TodoList";
+import styles from "./Todo.module.css";
+import TodoList from "./component/TodoList"
+import { Helmet } from "react-helmet-async";
 
 function TodoPage() {
   const [todos, setTodos] = useState(() => {
@@ -17,7 +18,6 @@ function TodoPage() {
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
-    document.title = `Todo (${todos.length})`;
   }, [todos]);
 
   const handleAddTodos = useCallback(
@@ -38,24 +38,30 @@ function TodoPage() {
   }, []);
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.h1}>To Do App</h1>
-        <form onSubmit={handleAddTodos} className={styles.form}>
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Enter your To Do"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <button type="submit" className={styles.button}>
-            Add
-          </button>
-        </form>
-        <TodoList todos={todos} onDelete={handleDeleteTodos} />
+    <>
+      <Helmet>
+  <title>{`(${todos.length}) Todo App`}</title>
+  <meta name="description" content="Manage your tasks" />
+</Helmet>
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <h1 className={styles.h1}>To Do App</h1>
+          <form onSubmit={handleAddTodos} className={styles.form}>
+            <input
+              className={styles.input}
+              type="text"
+              placeholder="Enter your To Do"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <button type="submit" className={styles.button}>
+              Add
+            </button>
+          </form>
+          <TodoList todos={todos} onDelete={handleDeleteTodos} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -6,6 +6,7 @@ import withComments from "../hocs/withComments";
 import SkeletonCard from "../../style/SkeletonCard";
 import { ProfileProvider } from "../context/ProfileContext";
 import { PostsProvider } from "../context/PostsContext";
+import { Helmet } from "react-helmet-async";
 
 
 function ProfileHeader() {
@@ -127,6 +128,12 @@ function PostsSection() {
 export default function PostPage() {
 
   return (
+    <>
+      <Helmet>
+        <title>Post App</title>
+        <meta name="description" content="Share your thoughts and ideas" />
+      </Helmet>
+    
     <PostsProvider>
       <ProfileProvider>
         <div className={styles.page}>
@@ -143,5 +150,6 @@ export default function PostPage() {
         </div>
       </ProfileProvider>
     </PostsProvider>
+    </>
   );
 }

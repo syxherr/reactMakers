@@ -2,8 +2,8 @@ import { lazy, useMemo, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { useState, useEffect } from "react";
-import { darkTheme, lightTheme } from "./style/Theme";
-import GlobalStyle from "./components/ui/GlobalStyle";
+import { darkTheme, lightTheme } from "./style/theme/Theme";
+import GlobalStyle from "./style/theme/GlobalStyle";
 import { UserProvider } from "./post/context/UserContext";
 import Navbar from "./Navbar";
 
@@ -11,7 +11,7 @@ import LoadingPage from "./style/LoadingPage";
 const Home = lazy(() => import("./Home/Home"));
 const TodoPage = lazy(() => import("./Todo/TodoPage"));
 const WeatherApp = lazy(() => import("./Weather/WeatherAppPage"));
-const PostPage = lazy(() => import("./post/components/PostPage"));
+const PostPage = lazy(() => import("./post/post/PostPage"));
 const LuxoraShop = lazy(() => import("./luxora/Pages/Luxora"));
 
 function App() {
