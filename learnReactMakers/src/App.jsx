@@ -14,7 +14,7 @@ const TodoPage = lazy(() => import("./Todo/TodoPage"));
 const WeatherApp = lazy(() => import("./Weather/WeatherAppPage"));
 const PostPage = lazy(() => import("./post/post/PostPage"));
 const LuxoraShop = lazy(() => import("./luxora/Pages/Luxora"));
-const TaskDashboard = lazy(() => import("./Task/Board"));
+const TaskDashboard = lazy(() => import("./TaskManagement/Board"));
 
 function App() {
   const [isDark, setIsDark] = useState(() => {
