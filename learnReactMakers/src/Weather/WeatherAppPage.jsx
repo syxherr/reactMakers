@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useId } from "react";
 import useSWR from "swr";
 import styles from "./WeatherAppPage.module.css";
 import PixelSnow from "../style/effect/PixelSnow";
@@ -9,7 +9,7 @@ const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 const fetcher = (url) =>
   fetch(url).then((r) => {
-    if (!r.ok) throw new Error("Gagal fetch data cuaca");
+    if (!r.ok) throw new Error("Failed to fetch weather data");
     return r.json();
   });
 
@@ -28,14 +28,26 @@ export function getWeatherEmoji(id) {
   return "🌡️";
 }
 
+export function getWeatherLabel(id) {
+  if (id >= 200 && id < 300) return "Thunderstorm";
+  if (id >= 300 && id < 400) return "Drizzle";
+  if (id >= 500 && id < 600) return "Rain";
+  if (id >= 600 && id < 700) return "Snow";
+  if (id >= 700 && id < 800) return "Fog";
+  if (id === 800) return "Clear sky";
+  if (id > 800) return "Partly cloudy";
+  return "Unknown";
+}
+
 function formatHour(dtTxt) {
   return dtTxt.slice(11, 16);
 }
 
-// ─── Icon helpers (sama seperti sebelumnya) ───────────────────────────────────
 function IconPin() {
   return (
     <svg
+      aria-hidden="true"
+      focusable="false"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -48,9 +60,12 @@ function IconPin() {
     </svg>
   );
 }
+
 function IconDroplet() {
   return (
     <svg
+      aria-hidden="true"
+      focusable="false"
       width="18"
       height="18"
       viewBox="0 0 24 24"
@@ -67,6 +82,8 @@ function IconDroplet() {
 function IconWind() {
   return (
     <svg
+      aria-hidden="true"
+      focusable="false"
       width="18"
       height="18"
       viewBox="0 0 24 24"
@@ -83,6 +100,8 @@ function IconWind() {
 function IconEye() {
   return (
     <svg
+      aria-hidden="true"
+      focusable="false"
       width="18"
       height="18"
       viewBox="0 0 24 24"
@@ -100,6 +119,8 @@ function IconEye() {
 function IconSun() {
   return (
     <svg
+      aria-hidden="true"
+      focusable="false"
       width="18"
       height="18"
       viewBox="0 0 24 24"
@@ -121,9 +142,12 @@ function IconSun() {
     </svg>
   );
 }
+
 function IconSearch() {
   return (
     <svg
+      aria-hidden="true"
+      focusable="false"
       width="14"
       height="14"
       viewBox="0 0 24 24"
@@ -139,10 +163,10 @@ function IconSearch() {
   );
 }
 
-// ─── Skeleton sederhana saat loading ─────────────────────────────────────────
 function Skeleton({ width = "100%", height = "1rem", style = {} }) {
   return (
     <span
+      aria-hidden="true"
       style={{
         display: "inline-block",
         width,
@@ -156,19 +180,43 @@ function Skeleton({ width = "100%", height = "1rem", style = {} }) {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+function StatCard({ icon, value, unit, label, accent, loading }) {
+  return (
+    <div
+      className={`${styles.statCard}${accent ? ` ${styles.accentCard}` : ""}`}
+      aria-label={`${label}: ${loading ? "loading" : `${value}${unit ? " " + unit : ""}`}`}
+    >
+      <span className={styles.statIcon}>{icon}</span>
+      <div className={styles.statValRow} aria-hidden="true">
+        <span className={styles.statValue}>
+          {loading ? <Skeleton width="40px" height="1.5rem" /> : value}
+        </span>
+        {unit && <span className={styles.statUnit}>{unit}</span>}
+      </div>
+      <div className={styles.statLabel} aria-hidden="true">
+        {label}
+      </div>
+    </div>
+  );
+}
+
 export default function WeatherAppPage() {
   const theme = useTheme();
-  const [activeTab, setActiveTab] = useState("perjam");
-  // cityInput: apa yang sedang diketik; city: yang aktif di-fetch
+  const [activeTab, setActiveTab] = useState("hourly");
+  //city yang aktif di-fetch
   const [cityInput, setCityInput] = useState("Bandung");
   const [city, setCity] = useState("Bandung");
 
+  const tabsId = useId();
+  const hourlyTabId = `${tabsId}-tab-hourly`;
+  const weeklyTabId = `${tabsId}-tab-weekly`;
+  const hourlyPanelId = `${tabsId}-panel-hourly`;
+  const weeklyPanelId = `${tabsId}-panel-weekly`;
+
   const snowColor = useMemo(() => theme.snow, [theme.snow]);
 
-  // ── SWR: current weather ──────────────────────────────────────────────────
-  // Key berubah kalau `city` berubah → SWR otomatis re-fetch
-  // revalidateOnFocus: false → tidak re-fetch tiap kali tab aktif (cukup tiap 10 menit)
+  // Key berubah kalau `city` berubah
+  // tidak re-fetch tiap kali tab aktif (cukup tiap 10 menit)
   const {
     data: current,
     error: currentErr,
@@ -180,7 +228,7 @@ export default function WeatherAppPage() {
     { revalidateOnFocus: false, refreshInterval: 10 * 60 * 1000 }, // cache 10 menit
   );
 
-  // ── SWR: 5-day forecast (per 3 jam) ──────────────────────────────────────
+  // 5-day forecast (per 3 jam) ──────────────────────────────────────
   const {
     data: forecast,
     error: forecastErr,
@@ -191,18 +239,17 @@ export default function WeatherAppPage() {
     { revalidateOnFocus: false, refreshInterval: 10 * 60 * 1000 },
   );
 
-  // ── Proses data forecast ──────────────────────────────────────────────────
-  // Hourly: ambil 7 slot pertama (setiap 3 jam)
+  // Hourlysetiap 3 jam
   const hourlyData = forecast
     ? forecast.list.slice(0, 7).map((item, i) => ({
         label: i === 0 ? "Now" : formatHour(item.dt_txt),
         icon: getWeatherEmoji(item.weather[0].id),
+        weatherLabel: getWeatherLabel(item.weather[0].id),
         temp: kelvinToCelsius(item.main.temp),
         now: i === 0,
       }))
     : [];
 
-  // Weekly: ambil 1 data per hari (noon / 12:00 kalau ada, fallback index pertama)
   const DAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const todayName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
     new Date().getDay()
@@ -224,12 +271,12 @@ export default function WeatherAppPage() {
     return {
       day,
       icon: item ? getWeatherEmoji(item.weather[0].id) : " ",
+      weatherLabel: item ? getWeatherLabel(item.weather[0].id) : "No data",
       temp: item ? kelvinToCelsius(item.main.temp) : "Coming Soon",
       isToday: day === todayName,
     };
   });
 
-  // ── Handler search ────────────────────────────────────────────────────────
   function handleSearch() {
     if (cityInput.trim()) setCity(cityInput.trim());
   }
@@ -237,7 +284,6 @@ export default function WeatherAppPage() {
     if (e.key === "Enter") handleSearch();
   }
 
-  // ── Derived values dari current ───────────────────────────────────────────
   const tempNow = current ? kelvinToCelsius(current.main.temp) : null;
   const feelsLike = current ? kelvinToCelsius(current.main.feels_like) : null;
   const tempMax = current ? kelvinToCelsius(current.main.temp_max) : null;
@@ -251,20 +297,35 @@ export default function WeatherAppPage() {
 
   const isError = currentErr || forecastErr;
 
-  // Tanggal lokal
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
 
+  const pageTitle = currentLoading
+    ? `Loading… — Weather App`
+    : isError
+      ? `City Not Found — Weather App`
+      : `${cityName} · ${tempNow}°C ${weatherDesc ?? ""} — Weather App`;
+
+  const pageDescription = currentLoading
+    ? "Loading current weather conditions."
+    : isError
+      ? "Weather data not available. Try searching for another city."
+      : `Current weather in ${cityName}: ${tempNow}°C, ${weatherDesc}. Humidity ${humidity}%, wind ${windSpeed} km/h.`;
+
   return (
     <>
       <Helmet>
-        <title>Weather App</title>
-        <meta name="description" content="Check the weather" />
+        <title>Real-Time Weather Forecast</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="website" />
       </Helmet>
-      <div className={styles.container}>
+
+      <main className={styles.container} aria-label="Weather application">
         =
         <style>{`@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }`}</style>
         {/* ── PixelSnow background ── */}
@@ -284,71 +345,100 @@ export default function WeatherAppPage() {
             variant="square"
           />
         </div>
-        {/* ── Konten utama ── */}
         <div className={styles.root}>
           <div className={styles.wrapper}>
-            {/* Search */}
-            <div className={styles.searchRow}>
+            <div className={styles.searchRow} role="search">
               <div className={styles.searchWrap}>
                 <span className={styles.searchIcon}>
                   <IconSearch />
                 </span>
+
                 <input
+                  id="city-search"
                   className={styles.searchInput}
                   value={cityInput}
                   onChange={(e) => setCityInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Search city…"
+                  type="search"
+                  autoComplete="off"
+                  aria-label="City name"
                 />
               </div>
-              <button className={styles.searchBtn} onClick={handleSearch}>
+              <button
+                className={styles.searchBtn}
+                onClick={handleSearch}
+                aria-label={`Search weather for ${cityInput || "city"}`}
+              >
                 Search
               </button>
             </div>
 
-            {/* Error state */}
             {isError && (
               <div
+                role="alert"
+                aria-live="assertive"
                 style={{
                   color: "#ffaaaa",
                   padding: "0.5rem 0",
                   fontSize: "0.85rem",
                 }}
               >
-                Try another city
+                City not found. Please try another city name.
               </div>
             )}
 
-            {/* Top grid */}
-            <div className={styles.topGrid}>
+            {/* ✅ aria-busy during loading so screen readers know content is updating */}
+            <div
+              className={styles.topGrid}
+              aria-busy={currentLoading}
+              aria-label="Current weather conditions"
+            >
               {/* Main panel */}
               <div className={styles.mainPanel}>
                 <div className={styles.locationMeta}>
-                  <span className={styles.pinIcon}>
+                  <span className={styles.pinIcon} aria-hidden="true">
                     <IconPin />
                   </span>
-                  {currentLoading ? (
-                    <Skeleton width="120px" height="0.85rem" />
-                  ) : (
-                    cityName
-                  )}
-                  <span className={styles.metaDot} />
-                  {today}
+                  {/* ✅ visually-hidden text for location + date gives full context */}
+                  <span
+                    aria-label={`Location: ${currentLoading ? "loading" : cityName}, ${today}`}
+                  >
+                    {currentLoading ? (
+                      <Skeleton width="120px" height="0.85rem" />
+                    ) : (
+                      cityName
+                    )}
+                    <span className={styles.metaDot} aria-hidden="true" />
+                    {today}
+                  </span>
                 </div>
+
                 <div className={styles.tempBlock}>
                   <div className={styles.tempRow}>
-                    <span className={styles.tempEmoji}>
+                    {/* ✅ emoji aria-hidden; weather label is in tempDesc below */}
+                    <span className={styles.tempEmoji} aria-hidden="true">
                       {currentLoading ? " " : getWeatherEmoji(weatherId)}
                     </span>
-                    <span className={styles.tempValue}>
+                    <span
+                      className={styles.tempValue}
+                      aria-label={
+                        currentLoading
+                          ? "Loading temperature"
+                          : `Temperature: ${tempNow} degrees Celsius`
+                      }
+                    >
                       {currentLoading ? (
                         <Skeleton width="60px" height="3rem" />
                       ) : (
                         tempNow
                       )}
                     </span>
-                    <span className={styles.tempDeg}>°C</span>
+                    <span className={styles.tempDeg} aria-hidden="true">
+                      °C
+                    </span>
                   </div>
+
                   <div className={styles.tempDesc}>
                     {currentLoading ? (
                       <Skeleton width="180px" height="0.9rem" />
@@ -358,107 +448,130 @@ export default function WeatherAppPage() {
                       </>
                     )}
                   </div>
+
                   <div className={styles.hiLo}>
-                    <span className={styles.hi}>
-                      ↑ {currentLoading ? " " : `${tempMax}°`}
+                    <span
+                      className={styles.hi}
+                      aria-label={
+                        currentLoading
+                          ? "Loading high temperature"
+                          : `High: ${tempMax} degrees`
+                      }
+                    >
+                      <span aria-hidden="true">↑</span>{" "}
+                      {currentLoading ? " " : `${tempMax}°`}
                     </span>
-                    <span className={styles.lo}>
-                      ↓ {currentLoading ? " " : `${tempMin}°`}
+                    <span
+                      className={styles.lo}
+                      aria-label={
+                        currentLoading
+                          ? "Loading low temperature"
+                          : `Low: ${tempMin} degrees`
+                      }
+                    >
+                      <span aria-hidden="true">↓</span>{" "}
+                      {currentLoading ? " " : `${tempMin}°`}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Humidity */}
-              <div className={styles.statCard}>
-                <span className={styles.statIcon}>
-                  <IconDroplet />
-                </span>
-                <div className={styles.statValRow}>
-                  <span className={styles.statValue}>
-                    {currentLoading ? (
-                      <Skeleton width="40px" height="1.5rem" />
-                    ) : (
-                      humidity
-                    )}
-                  </span>
-                  <span className={styles.statUnit}>%</span>
-                </div>
-                <div className={styles.statLabel}>Humidity</div>
-              </div>
-
-              {/* Wind */}
-              <div className={styles.statCard}>
-                <span className={styles.statIcon}>
-                  <IconWind />
-                </span>
-                <div className={styles.statValRow}>
-                  <span className={styles.statValue}>
-                    {currentLoading ? (
-                      <Skeleton width="40px" height="1.5rem" />
-                    ) : (
-                      windSpeed
-                    )}
-                  </span>
-                  <span className={styles.statUnit}>km/h</span>
-                </div>
-                <div className={styles.statLabel}>Wind Speed</div>
-              </div>
-
-              {/* Visibility */}
-              <div className={styles.statCard}>
-                <span className={styles.statIcon}>
-                  <IconEye />
-                </span>
-                <div className={styles.statValRow}>
-                  <span className={styles.statValue}>
-                    {currentLoading ? (
-                      <Skeleton width="40px" height="1.5rem" />
-                    ) : (
-                      visibility
-                    )}
-                  </span>
-                  <span className={styles.statUnit}>km</span>
-                </div>
-                <div className={styles.statLabel}>Visibility</div>
-              </div>
-
-              {/* UV — accent (OpenWeather free tier tidak punya UV, pakai placeholder) */}
-              <div className={`${styles.statCard} ${styles.accentCard}`}>
-                <span className={styles.statIcon}>
-                  <IconSun />
-                </span>
-                <div className={styles.statValRow}>
-                  <span className={styles.statValue}>UV —</span>
-                </div>
-                <div className={styles.statLabel}>UV Index</div>
-              </div>
+              {/* ✅ StatCard components with aria-label */}
+              <StatCard
+                icon={<IconDroplet />}
+                value={humidity}
+                unit="%"
+                label="Humidity"
+                loading={currentLoading}
+              />
+              <StatCard
+                icon={<IconWind />}
+                value={windSpeed}
+                unit="km/h"
+                label="Wind Speed"
+                loading={currentLoading}
+              />
+              <StatCard
+                icon={<IconEye />}
+                value={visibility}
+                unit="km"
+                label="Visibility"
+                loading={currentLoading}
+              />
+              <StatCard
+                icon={<IconSun />}
+                value="—"
+                label="UV Index"
+                accent
+                loading={false}
+              />
             </div>
 
-            {/* Tabs */}
+            {/* ✅ Tabs — full ARIA tab pattern */}
             <div className={styles.tabRow}>
-              <div className={styles.blurLayer}>
+              <div
+                className={styles.blurLayer}
+                role="tablist"
+                aria-label="Forecast view"
+              >
                 <button
-                  className={`${styles.tab} ${activeTab === "perjam" ? styles.active : ""}`}
-                  onClick={() => setActiveTab("perjam")}
+                  id={hourlyTabId}
+                  role="tab"
+                  aria-selected={activeTab === "hourly"}
+                  aria-controls={hourlyPanelId}
+                  className={`${styles.tab} ${activeTab === "hourly" ? styles.active : ""}`}
+                  onClick={() => setActiveTab("hourly")}
+                  // ✅ keyboard: only the active tab is in tab order; arrows switch tabs
+                  tabIndex={activeTab === "hourly" ? 0 : -1}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowRight") {
+                      setActiveTab("weekly");
+                    }
+                    if (e.key === "ArrowLeft") {
+                      setActiveTab("hourly");
+                    }
+                  }}
                 >
                   Hourly
                 </button>
                 <button
-                  className={`${styles.tab} ${activeTab === "7hari" ? styles.active : ""}`}
-                  onClick={() => setActiveTab("7hari")}
+                  id={weeklyTabId}
+                  role="tab"
+                  aria-selected={activeTab === "weekly"}
+                  aria-controls={weeklyPanelId}
+                  className={`${styles.tab} ${activeTab === "weekly" ? styles.active : ""}`}
+                  onClick={() => setActiveTab("weekly")}
+                  tabIndex={activeTab === "weekly" ? 0 : -1}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowRight") {
+                      setActiveTab("weekly");
+                    }
+                    if (e.key === "ArrowLeft") {
+                      setActiveTab("hourly");
+                    }
+                  }}
                 >
                   7 Days
                 </button>
               </div>
             </div>
 
-            {/* Hourly */}
-            {activeTab === "perjam" && (
+            {/* ✅ Tab panels — role="tabpanel" with proper labelling */}
+            <div
+              id={hourlyPanelId}
+              role="tabpanel"
+              aria-labelledby={hourlyTabId}
+              hidden={activeTab !== "hourly"}
+              aria-busy={forecastLoading}
+            >
               <div className={styles.hourlyScroll}>
                 {forecastLoading
                   ? Array.from({ length: 7 }).map((_, i) => (
-                      <div key={i} className={styles.hourSlot}>
+                      <div
+                        key={i}
+                        className={styles.hourSlot}
+                        aria-hidden="true"
+                      >
                         <Skeleton width="36px" height="0.75rem" />
                         <Skeleton
                           width="24px"
@@ -472,28 +585,38 @@ export default function WeatherAppPage() {
                       <div
                         key={h.label}
                         className={`${styles.hourSlot} ${h.now ? styles.now : ""}`}
+                        // ✅ gives each slot a full readable label
+                        aria-label={`${h.label}: ${h.weatherLabel}, ${h.temp !== null ? h.temp + " degrees" : "no data"}`}
                       >
-                        <span className={styles.hourLabel}>{h.label}</span>
-                        <span className={styles.hourIcon}>{h.icon}</span>
-                        <span
-                          className={styles.hourTemp}
-                          style={{
-                            fontSize: h.temp === null ? "0.6rem" : undefined,
-                          }}
-                        >
+                        <span className={styles.hourLabel} aria-hidden="true">
+                          {h.label}
+                        </span>
+                        <span className={styles.hourIcon} aria-hidden="true">
+                          {h.emoji}
+                        </span>
+                        <span className={styles.hourTemp} aria-hidden="true">
                           {h.temp !== null ? `${h.temp}°` : "No data"}
                         </span>
                       </div>
                     ))}
               </div>
-            )}
+            </div>
 
-            {/* 7 Days */}
-            {activeTab === "7hari" && (
+            <div
+              id={weeklyPanelId}
+              role="tabpanel"
+              aria-labelledby={weeklyTabId}
+              hidden={activeTab !== "weekly"}
+              aria-busy={forecastLoading}
+            >
               <div className={styles.hourlyScroll}>
                 {forecastLoading
                   ? Array.from({ length: 7 }).map((_, i) => (
-                      <div key={i} className={styles.hourSlot}>
+                      <div
+                        key={i}
+                        className={styles.hourSlot}
+                        aria-hidden="true"
+                      >
                         <Skeleton width="36px" height="0.75rem" />
                         <Skeleton
                           width="24px"
@@ -507,11 +630,17 @@ export default function WeatherAppPage() {
                       <div
                         key={w.day}
                         className={`${styles.hourSlot} ${w.isToday ? styles.now : ""}`}
+                        aria-label={`${w.isToday ? "Today, " : ""}${w.day}: ${w.weatherLabel}, ${typeof w.temp === "number" ? w.temp + " degrees" : w.temp}`}
                       >
-                        <span className={styles.hourLabel}>{w.day}</span>
-                        <span className={styles.hourIcon}>{w.icon}</span>
+                        <span className={styles.hourLabel} aria-hidden="true">
+                          {w.day}
+                        </span>
+                        <span className={styles.hourIcon} aria-hidden="true">
+                          {w.emoji}
+                        </span>
                         <span
                           className={styles.hourTemp}
+                          aria-hidden="true"
                           style={{
                             fontSize:
                               w.temp === "Coming Soon" ? "1rem" : undefined,
@@ -532,10 +661,10 @@ export default function WeatherAppPage() {
                       </div>
                     ))}
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

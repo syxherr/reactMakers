@@ -54,7 +54,14 @@ const GlobalStyle = createGlobalStyle`
     --radius:          16px;
     --radius-sm:       12px;
     --radius-pill:     99px;
- 
+
+    --btn:             ${({ theme }) => theme.btn};
+
+    --bg2:             ${({ theme }) => theme.bg2};
+
+    --navBar:          ${({ theme }) => theme.navBar};
+
+    
     /* ── Motion ── */
     --transition:      0.18s cubic-bezier(0.4, 0, 0.2, 1);
  

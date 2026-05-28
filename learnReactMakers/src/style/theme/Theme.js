@@ -7,8 +7,12 @@ export const darkTheme = {
 
   // CSS variables
   bg:          "#1e1a2e",
+  bg2:          "#1e1a2e",
   bgCard:      "#312C51",
   textMuted:   "#d4d3da",
+
+  navBar:           "#312C51",
+
   accent:      "#c157f2",
   accentHover: "#9754cb",
   accentLight: "rgba(222, 172, 245, 0.12)",
@@ -18,6 +22,8 @@ export const darkTheme = {
   shadowSoft:  "0 8px 32px rgba(0, 0, 0, 0.4)",
   shadowBtn:   "0 4px 14px rgba(151, 84, 203, 0.3)",
   
+  btn:         "#211d32",
+
   snow:        "#dfbafb",
   textDays:     "#411c5d"
 };
@@ -31,10 +37,12 @@ export const lightTheme = {
   container:   "#ffffff",
 
   // CSS variables
-  bg:          "#f2eff8",
-  bgCard:      "#ffffff",
+  bg:          "#e9e1f9",
+  bg2:          "#e3d8f8",
+  bgCard:      "#f5f2fa",
   bgCardHover:  "#f7f4fc",
   textMuted:       "#9b8eaa",
+  navBar:           "#f5f4f6",
 
   accent:      "#48426D",
   accentHover: "#312C51",
@@ -48,6 +56,8 @@ export const lightTheme = {
 
   shadowSoft:  "0 8px 32px rgba(49, 44, 81, 0.08)",
   shadowBtn:   "0 4px 14px rgba(72, 66, 109, 0.25)",
+
+  btn: "rgb(231, 215, 243)",
 
   snow:        "#b770ee",
   textDays:     "#e9e9e9"

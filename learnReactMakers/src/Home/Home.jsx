@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: "/weather", label: "Weather App" },
   { to: "/post", label: "Post App" },
   { to: "/luxora", label: "Luxora Shop" },
+  { to: "/task-dashboard", label: "Task Dashboard" },
 ];
 
 function NameForm() {

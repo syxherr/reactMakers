@@ -1,8 +1,6 @@
-import React, { useReducer, useCallback } from "react";
+import React, { useReducer, useCallback, useRef, useEffect } from "react";
 import styles from "./Luxora.module.css";
 import { Helmet } from "react-helmet-async";
-
-
 
 const PRODUCTS = [
   {
@@ -91,7 +89,7 @@ type State = {
 };
 
 type Action =
-  | { type: "ADD_TO_CART"; product: (typeof PRODUCTS)[0] }
+  | { type: "ADD_TO_CART"; product: Product }
   | { type: "REMOVE_FROM_CART"; id: number }
   | { type: "CHANGE_QUANTITY"; id: number; delta: number }
   | { type: "FILTER_CATEGORY"; value: string }
@@ -104,20 +102,17 @@ const fmt = (n: number): string => "Rp " + n.toLocaleString("id-ID");
 
 const CART_KEY = "luxora_cart";
 
-function loadCart() {
+function loadCart(): CartItem[] {
   try {
     return JSON.parse(localStorage.getItem(CART_KEY) ?? "[]");
   } catch {
     return [];
   }
-  
 }
-function saveCart(cart: CartItem[]): void{
+
+function saveCart(cart: CartItem[]): void {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
-
 }
-
-
 
 const initialState: State = {
   cart: loadCart(),
@@ -133,17 +128,17 @@ function reducer(state: State, action: Action): State {
       const inCart = state.cart.find((item) => item.id === action.product.id);
       const newCart = inCart
         ? state.cart.map((item) =>
-            item.id === action.product.id ? { ...item, qty: item.qty + 1 } : item,
+            item.id === action.product.id ? { ...item, qty: item.qty + 1 } : item
           )
         : [...state.cart, { ...action.product, qty: 1 }];
       saveCart(newCart);
       return {
         ...state,
         cart: newCart,
-        notification: { message: `${action.product.name} ditambahkan ke keranjang!` },
+        notification: { message: `${action.product.name} added to cart!` },
       };
     }
- 
+
     case "REMOVE_FROM_CART": {
       const removedItem = state.cart.find((item) => item.id === action.id);
       const newCart = state.cart.filter((item) => item.id !== action.id);
@@ -152,7 +147,9 @@ function reducer(state: State, action: Action): State {
         ...state,
         cart: newCart,
         notification: {
-          message: removedItem ? `${removedItem.name} dihapus dari keranjang!` : "Produk dihapus!",
+          message: removedItem
+            ? `${removedItem.name} removed from cart!`
+            : "Item removed!",
         },
       };
     }
@@ -162,23 +159,16 @@ function reducer(state: State, action: Action): State {
       if (!targetItem) return state;
       const newQty = targetItem.qty + action.delta;
 
-      //contoh reduce kalau qty habis, item langsung dihapus dari cart
       if (newQty <= 0) {
         const newCart = state.cart.filter((item) => item.id !== action.id);
         saveCart(newCart);
-        return {
-          ...state,
-          cart: newCart,
-        };
+        return { ...state, cart: newCart };
       }
       const newCart = state.cart.map((item) =>
-        item.id === action.id ? { ...item, qty: newQty } : item,
+        item.id === action.id ? { ...item, qty: newQty } : item
       );
       saveCart(newCart);
-      return {
-        ...state,
-        cart: newCart,
-      };
+      return { ...state, cart: newCart };
     }
 
     case "FILTER_CATEGORY":
@@ -194,11 +184,69 @@ function reducer(state: State, action: Action): State {
       return state;
   }
 }
+
+// ─── ProductCard ──────────────────────────────────────────────────────────────
+
 interface ProductCardProps {
   product: Product;
   onAdd: (product: Product) => void;
 }
- 
+
+function ProductCard({ product, onAdd }: ProductCardProps) {
+  return (
+    <article
+      className={styles.card}
+      itemScope
+      itemType="https://schema.org/Product"
+    >
+      {/* Machine-readable product name for crawlers */}
+      <meta itemProp="name" content={product.name} />
+      <meta itemProp="category" content={product.category} />
+
+      <div
+        className={styles.cardImg}
+        style={{ background: product.color }}
+        aria-hidden="true"
+      >
+        {product.thumbnail}
+      </div>
+
+      <div className={styles.cardBody}>
+        <p className={styles.cardName} itemProp="name">
+          {product.name}
+        </p>
+
+        {/* Schema.org Offer for price */}
+        <div itemProp="offers" itemScope itemType="https://schema.org/Offer">
+          <meta itemProp="priceCurrency" content="IDR" />
+          <data
+            className={styles.cardPrice}
+            itemProp="price"
+            value={product.price}
+          >
+            {fmt(product.price)}
+          </data>
+        </div>
+
+        <p className={styles.cardSold}>
+          <span aria-hidden="true">🛒</span>{" "}
+          <span itemProp="aggregateRating">{product.sold} sold</span>
+        </p>
+
+        <button
+          className={styles.addBtn}
+          onClick={() => onAdd(product)}
+          aria-label={`Add ${product.name} to cart`}
+        >
+          + Add to Cart
+        </button>
+      </div>
+    </article>
+  );
+}
+
+// ─── CartDrawer ───────────────────────────────────────────────────────────────
+
 interface CartDrawerProps {
   cart: CartItem[];
   onClose: () => void;
@@ -206,74 +254,97 @@ interface CartDrawerProps {
   onRemove: (id: number) => void;
 }
 
-function ProductCard({ product, onAdd }: ProductCardProps) {
-  return (
-    <div className={styles.card}>
-      <div className={styles.cardImg} style={{ background: product.color }}>
-        {product.thumbnail}
-      </div>
-      <div className={styles.cardBody}>
-        <p className={styles.cardName}>{product.name}</p>
-        <p className={styles.cardPrice}>{fmt(product.price)}</p>
-        <p className={styles.cardSold}>🛒 {product.sold} Sold</p>
-
-        {/* 3. function dipanggil saat tombol diklik */}
-        <button className={styles.addBtn} onClick={() => onAdd(product)}>
-          + Keranjang
-        </button>
-      </div>
-    </div>
-  );
-}
-
 function CartDrawer({ cart, onClose, onChangeQty, onRemove }: CartDrawerProps) {
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const headingId = "cart-drawer-title";
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Move focus to close button when drawer opens
+  useEffect(() => {
+    closeRef.current?.focus();
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   return (
     <>
-      <div className={styles.overlay} onClick={onClose} />
-      <div className={styles.drawer}>
+      {/* Overlay: hidden from AT, closes drawer on click */}
+      <div
+        className={styles.overlay}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        className={styles.drawer}
+      >
         <div className={styles.drawerHead}>
-          <h2>Keranjang 🛒</h2>
-          <button className={styles.closeBtn} onClick={onClose}>
+          <h2 id={headingId}>
+            Shopping Cart <span aria-hidden="true">🛒</span>
+          </h2>
+          <button
+            ref={closeRef}
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label="Close cart"
+          >
             ✕
           </button>
         </div>
 
         <div className={styles.drawerBody}>
           {cart.length === 0 ? (
-            <p className={styles.emptyMsg}>Keranjang masih Kosong</p>
+            <p className={styles.emptyMsg}>Your cart is empty.</p>
           ) : (
-            cart.map((item) => (
-              <div key={item.id} className={styles.cartItem}>
-                <div className={styles.cartEmoji}>{item.thumbnail}</div>
-                <div className={styles.cartInfo}>
-                  <p className={styles.cartName}>{item.name}</p>
-                  <p className={styles.cartPrice}>{fmt(item.price)}</p>
-                  <div className={styles.qtyRow}>
-                    <button
-                      className={styles.qtyBtn}
-                      onClick={() => onChangeQty(item.id, -1)}
-                    >
-                      −
-                    </button>
-                    <span className={styles.qtyNum}>{item.qty}</span>
-                    <button
-                      className={styles.qtyBtn}
-                      onClick={() => onChangeQty(item.id, +1)}
-                    >
-                      +
-                    </button>
+            <ul aria-label="Cart items" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {cart.map((item) => (
+                <li key={item.id} className={styles.cartItem}>
+                  <div className={styles.cartEmoji} aria-hidden="true">
+                    {item.thumbnail}
                   </div>
-                </div>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => onRemove(item.id)}
-                >
-                  🗑️
-                </button>
-              </div>
-            ))
+                  <div className={styles.cartInfo}>
+                    <p className={styles.cartName}>{item.name}</p>
+                    <p className={styles.cartPrice}>{fmt(item.price)}</p>
+                    <div className={styles.qtyRow} role="group" aria-label={`Quantity for ${item.name}`}>
+                      <button
+                        className={styles.qtyBtn}
+                        onClick={() => onChangeQty(item.id, -1)}
+                        aria-label={`Decrease quantity of ${item.name}`}
+                      >
+                        −
+                      </button>
+                      <span className={styles.qtyNum} aria-live="polite" aria-atomic="true">
+                        {item.qty}
+                      </span>
+                      <button
+                        className={styles.qtyBtn}
+                        onClick={() => onChangeQty(item.id, +1)}
+                        aria-label={`Increase quantity of ${item.name}`}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    className={styles.deleteBtn}
+                    onClick={() => onRemove(item.id)}
+                    aria-label={`Remove ${item.name} from cart`}
+                  >
+                    <span aria-hidden="true">🗑️</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 
@@ -281,15 +352,21 @@ function CartDrawer({ cart, onClose, onChangeQty, onRemove }: CartDrawerProps) {
           <div className={styles.drawerFoot}>
             <div className={styles.totalRow}>
               <span>Total:</span>
-              <span className={styles.totalAmount}>{fmt(total)}</span>
+              <span className={styles.totalAmount}>
+                <data value={total}>{fmt(total)}</data>
+              </span>
             </div>
-            <button className={styles.checkoutBtn}>Checkout →</button>
+            <button className={styles.checkoutBtn} aria-label="Proceed to checkout">
+              Checkout →
+            </button>
           </div>
         )}
       </div>
     </>
   );
 }
+
+// ─── Luxora (Page) ────────────────────────────────────────────────────────────
 
 function Luxora() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -299,97 +376,158 @@ function Luxora() {
   const filtered = PRODUCTS.filter(
     (p) =>
       (filter === "All" || p.category === filter) &&
-      p.name.toLowerCase().includes(search.toLowerCase()),
+      p.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleAdd = useCallback(
-    //1. contoh nambah produk
     (product: Product) => dispatch({ type: "ADD_TO_CART", product }),
-    [],
+    []
   );
-
   const handleRemove = useCallback(
     (id: number) => dispatch({ type: "REMOVE_FROM_CART", id }),
-    [],
+    []
   );
-
   const handleChangeQty = useCallback(
     (id: number, delta: number) => dispatch({ type: "CHANGE_QUANTITY", id, delta }),
-    [],
+    []
   );
-
   const handleToggleCart = useCallback(
     () => dispatch({ type: "TOGGLE_CART" }),
-    [],
+    []
   );
-
   const handleSearch = useCallback(
     (value: string) => dispatch({ type: "SET_SEARCH", value }),
-    [],
+    []
   );
-
   const handleFilter = useCallback(
     (value: string) => dispatch({ type: "FILTER_CATEGORY", value }),
-    [],
+    []
   );
 
   if (notification) {
     setTimeout(() => dispatch({ type: "CLEAR_NOTIFICATION" }), 3000);
   }
 
+  const cartLabel = totalItems > 0
+    ? `Open cart, ${totalItems} item${totalItems > 1 ? "s" : ""}`
+    : "Open cart, empty";
+
   return (
     <>
-    <Helmet>
-      <title>Luxora Shop</title>
-      <meta name="description" content="Marketplace for electronics and accessories" />
-    </Helmet>
-    <div className={styles.page}>
-      <nav className={styles.navbar}>
-        <span className={styles.logo}>✦ Luxora Shop</span>
-        <button className={styles.cartBtn} onClick={handleToggleCart}>
-          Keranjang 🛒
-          {totalItems > 0 && <span className={styles.badge}>{totalItems}</span>}
-        </button>
-      </nav>
-
-      <div className={styles.filters}>
-        <input
-          className={styles.searchInput}
-          placeholder="Cari produk..."
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
+      <Helmet>
+        <title>Luxora Shop — Electronics & Accessories</title>
+        <meta
+          name="description"
+          content="Shop the latest electronics and accessories at Luxora — MacBooks, iPhones, keyboards, headphones, monitors and more."
         />
-        {CATEGORIES.map((cat) => (
+        <meta property="og:title" content="Luxora Shop — Electronics & Accessories" />
+        <meta
+          property="og:description"
+          content="Shop the latest electronics and accessories at Luxora."
+        />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://luxora.shop" />
+      </Helmet>
+
+      <div className={styles.page}>
+        {/* ── Navigation ── */}
+        <nav className={styles.navbar} aria-label="Main navigation">
+          <a href="/" className={styles.logo} aria-label="Luxora Shop home">
+            ✦ Luxora Shop
+          </a>
           <button
-            key={cat}
-            className={`${styles.filterBtn} ${filter === cat ? styles.active : ""}`}
-            onClick={() => handleFilter(cat)}
+            className={styles.cartBtn}
+            onClick={handleToggleCart}
+            aria-expanded={isCartOpen}
+            aria-controls="cart-drawer"
+            aria-label={cartLabel}
           >
-            {cat}
+            Cart <span aria-hidden="true">🛒</span>
+            {totalItems > 0 && (
+              <span className={styles.badge} aria-hidden="true">
+                {totalItems}
+              </span>
+            )}
           </button>
-        ))}
+        </nav>
+
+        {/* ── Main content ── */}
+        <main id="main-content">
+          {/* Search & filters */}
+          <section aria-label="Search and filter products" className={styles.filters}>
+            <label htmlFor="product-search" className="sr-only">
+              Search products
+            </label>
+            <input
+              id="product-search"
+              className={styles.searchInput}
+              placeholder="Search products…"
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+              type="search"
+              autoComplete="off"
+            />
+
+            <div role="group" aria-label="Filter by category">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  className={`${styles.filterBtn} ${filter === cat ? styles.active : ""}`}
+                  onClick={() => handleFilter(cat)}
+                  aria-pressed={filter === cat}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Product grid */}
+          <section aria-label="Product listings" aria-live="polite">
+            {filtered.length === 0 ? (
+              <p className={styles.emptyMsg} role="status">
+                No products found.
+              </p>
+            ) : (
+              <ul
+                className={styles.grid}
+                role="list"
+                aria-label={`${filtered.length} product${filtered.length > 1 ? "s" : ""} found`}
+              >
+                {filtered.map((product) => (
+                  <li key={product.id} role="listitem">
+                    <ProductCard product={product} onAdd={handleAdd} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </main>
+
+        {/* ── Cart Drawer ── */}
+        {isCartOpen && (
+          <CartDrawer
+            cart={cart}
+            onClose={handleToggleCart}
+            onChangeQty={handleChangeQty}
+            onRemove={handleRemove}
+          />
+        )}
+
+        {/* ── Toast Notification ── */}
+        {notification && (
+          <div
+            className={styles.toast}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <span aria-hidden="true">✓</span> {notification.message}
+          </div>
+        )}
       </div>
-
-      <div className={styles.grid}>
-        {filtered.map((product) => (
-          <ProductCard key={product.id} product={product} onAdd={handleAdd} /> //2. function dikirim
-        ))}
-      </div>
-
-      {isCartOpen && (
-        <CartDrawer
-          cart={cart}
-          onClose={handleToggleCart}
-          onChangeQty={handleChangeQty}
-          onRemove={handleRemove}
-        />
-      )}
-
-      {notification && (
-        <div className={styles.toast}>✓ {notification.message}</div>
-      )}
-    </div>
     </>
   );
 }
+
 export default React.memo(Luxora);

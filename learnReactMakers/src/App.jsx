@@ -7,12 +7,14 @@ import GlobalStyle from "./style/theme/GlobalStyle";
 import { UserProvider } from "./post/context/UserContext";
 import Navbar from "./Navbar";
 
+
 import LoadingPage from "./style/LoadingPage";
 const Home = lazy(() => import("./Home/Home"));
 const TodoPage = lazy(() => import("./Todo/TodoPage"));
 const WeatherApp = lazy(() => import("./Weather/WeatherAppPage"));
 const PostPage = lazy(() => import("./post/post/PostPage"));
 const LuxoraShop = lazy(() => import("./luxora/Pages/Luxora"));
+const TaskDashboard = lazy(() => import("./Task/Board"));
 
 function App() {
   const [isDark, setIsDark] = useState(() => {
@@ -48,6 +50,7 @@ function App() {
             <Route path="/weather" element={<WeatherApp />} />
             <Route path="/post" element={<PostPage />} />
             <Route path="/luxora" element={<LuxoraShop />} />
+            <Route path="/task-dashboard" element={<TaskDashboard />} />
           </Routes>
         </Suspense>
 
