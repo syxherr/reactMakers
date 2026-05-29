@@ -441,3 +441,16 @@
 .hourSlot.now .hourTemp {
   color: #fff;
 }
+
+.comingSoon {
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-family: Arial, sans-serif;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.9; }
+}

@@ -4,7 +4,8 @@ import WeatherAppPage from "../Weather/WeatherAppPage";
 import { getWeatherEmoji } from "../Weather/WeatherAppPage";
 import { MemoryRouter } from "react-router-dom";
 import Home from "../Home/Home";
-import { UserProvider } from "../hooks/useUser";
+import { UserProvider } from "../post/context/UserContext";
+import { HelmetProvider } from "react-helmet-async";
 
 beforeAll(() => {
   globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
@@ -14,12 +15,19 @@ beforeAll(() => {
   }));
 });
 
+beforeEach(() => {
+  localStorage.clear();
+});
+
 vi.mock("swr", () => ({ default: vi.fn() }));
 import useSWR from "swr";
 
 vi.mock("../style/effect/PixelSnow", () => ({ default: () => null }));
 vi.mock("styled-components", () => ({ useTheme: () => ({ snow: "#ffffff" }) }));
-
+vi.mock("react-helmet-async", () => ({
+  Helmet: () => null,
+  HelmetProvider: ({ children }) => children,
+}));
 // Data dummy
 const mockCurrent = {
   name: "Bandung",
@@ -61,11 +69,13 @@ const mockForecast = {
 
 function renderHome() {
   return render(
-    <MemoryRouter>
-      <UserProvider>
-        <Home />
-      </UserProvider>
-    </MemoryRouter>,
+    <HelmetProvider>
+      <MemoryRouter>
+        <UserProvider>
+          <Home />
+        </UserProvider>
+      </MemoryRouter>
+    </HelmetProvider>,
   );
 }
 
@@ -94,7 +104,9 @@ function mockSWR({ currentErr = null, loading = false } = {}) {
 describe("HomeScreen", () => {
   it("1. render button and input components", () => {
     renderHome();
-    expect(screen.getByRole("button", { name: /enter/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /submit name/i }),
+    ).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/your name/i)).toBeInTheDocument();
   });
 
@@ -106,17 +118,20 @@ describe("HomeScreen", () => {
   });
 
   it("clicking enter button after fill name will redirect to home screen", async () => {
-    renderHome();
-    fireEvent.change(screen.getByPlaceholderText(/your name/i), {
-      target: { value: "Shaskia" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /enter/i }));
-    expect(await screen.findByText(/halo,.*Shaskia/i)).toBeInTheDocument();
+  renderHome();
+  fireEvent.change(screen.getByPlaceholderText(/your name/i), {
+    target: { value: "Shaskia" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: /submit name/i }));
+
+  expect(
+    await screen.findByText(/what would you like to explore/i)
+  ).toBeInTheDocument();
   });
 });
 
 describe("WeatherAppPage", () => {
-  // ── R1: Search input & button ──────────────────────────────────────────────
+  // ── R1: Search input & button
   describe("R1 – search input & button", () => {
     beforeEach(() => mockSWR());
 

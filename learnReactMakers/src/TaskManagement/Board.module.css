@@ -20,13 +20,12 @@
   
 } */
 
-/* ── Toolbar ── */
 .toolbar {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
 }
 
 .searchWrap {
@@ -126,12 +125,13 @@
   background: #22c55e;
 }
 
-/* ── Stats bar ── */
+
 .statsBar {
   display: flex;
+  margin-top: 1rem;
   text-transform: capitalize;
   gap: 16px;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   font-size: 0.8rem;
   color: var(--text);
   flex-wrap: wrap;

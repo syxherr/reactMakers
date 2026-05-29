@@ -27,7 +27,8 @@ const GlobalStyle = createGlobalStyle`
     --text:            ${({ theme }) => theme.text};
     --text2:           ${({ theme }) => theme.text2};
     --text-muted:      ${({ theme }) => theme.textMuted};
- 
+     --text-muted2:      ${({ theme }) => theme.textMuted2};
+     --fab                ${({ theme }) => theme.fab};
     /* ── Accent (primary purple) ── */
     --accent:          ${({ theme }) => theme.accent};
     --accent-hover:    ${({ theme }) => theme.accentHover};
@@ -42,8 +43,9 @@ const GlobalStyle = createGlobalStyle`
  
     /* ── Borders ── */
     --border:          ${({ theme }) => theme.border};
-    --border-2:        ${({ theme }) => theme.border2};
- 
+    --border2:        ${({ theme }) => theme.border2};
+     --border3:        ${({ theme }) => theme.border3};
+
     /* ── Shadows ── */
     --shadow-soft:     ${({ theme }) => theme.shadowSoft};
     --shadow-btn:      ${({ theme }) => theme.shadowBtn};
