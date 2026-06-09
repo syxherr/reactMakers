@@ -1,0 +1,246 @@
+.wrapper {
+  margin-top: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ── Table header ── */
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1fr 140px 1fr;
+  padding: 12px 20px;
+  background: var(--bg-card-inner);
+  border-bottom: 1px solid var(--border);
+}
+.nameA {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--win-a);
+}
+.nameB {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--win-b);
+  text-align: right;
+}
+.headerCenter {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* ── Animated rows ── */
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes barGrow {
+  from {
+    width: 0%;
+  }
+}
+
+.statRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px;
+  align-items: center;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+
+  /* row masuk satu-satu */
+  opacity: 0;
+  animation: rowIn 0.35s ease forwards;
+}
+
+/* delay per index — diset via inline style di JSX */
+.statRow:last-child {
+  border-bottom: none;
+}
+.statRow:hover {
+  background: var(--bg-card-inner);
+}
+
+.valA {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.valB {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+/* ── Numbers ── */
+.numGreen {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--win-a);
+}
+.numOrange {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--win-b);
+}
+.numMuted {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+/* ── Win dots — dengan glow ── */
+.dotGreen {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--win-a);
+  box-shadow:
+    0 0 4px 1px var(--win-a),
+    0 0 10px 2px var(--win-a-dim),
+    0 0 18px 3px var(--win-a-dim);
+}
+.dotOrange {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--win-b);
+  box-shadow:
+    0 0 4px 1px var(--win-b),
+    0 0 10px 2px var(--win-b-dim),
+    0 0 18px 3px var(--win-b-dim);
+}
+.dotMuted {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text-muted);
+}
+
+/* ── Dual bars ── */
+.middle {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0 12px;
+}
+.statLabel {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.dualBars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.barTrack {
+  height: 5px;
+  border-radius: 20px;
+  background: var(--bar-bg);
+  overflow: visible;
+  position: relative;
+}
+.barFill {
+  height: 100%;
+  border-radius: 20px;
+  position: absolute;
+  top: 0;
+  /* bar grow animasi — delay ngikutin row */
+  animation: barGrow 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.barLeft {
+  background: var(--bar-a);
+  right: 0;
+  box-shadow:
+    0 0 4px 1px var(--bar-a),
+    0 0 8px 2px var(--win-a-dim);
+}
+.barRight {
+  background: var(--bar-b);
+  left: 0;
+  box-shadow:
+    0 0 4px 1px var(--bar-b),
+    0 0 8px 2px var(--win-b-dim);
+}
+.barDim {
+  opacity: 0.28;
+  box-shadow: none;
+}
+
+/* ── Result banner — juga animasi masuk ── */
+@keyframes resultIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 20px;
+  background: var(--bg-card-inner);
+  border-top: 1px solid var(--border);
+  animation: resultIn 0.35s ease forwards;
+}
+.resultGreen {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--win-a);
+}
+.resultOrange {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--win-b);
+}
+.resultDraw {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+.resultScore {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
+}

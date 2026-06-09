@@ -1,0 +1,159 @@
+
+.header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.headerLeft { display: flex; align-items: center; gap: 10px; }
+.title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--text-primary); margin: 0;
+}
+.count {
+  font-size: 11px; font-weight: 700;
+  background: var(--bg-card-inner);
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  padding: 2px 9px; border-radius: 20px;
+}
+.btnClear {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px; font-weight: 700;
+  padding: 6px 14px; border-radius: 8px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--text-muted); cursor: pointer;
+  transition: all 0.15s;
+}
+.btnClear:hover { color: var(--red); border-color: rgba(224,58,47,0.3); }
+
+/* ── Empty ── */
+.empty {
+  font-size: 13px; color: var(--text-muted);
+  text-align: center; padding: 24px 0;
+}
+
+/* ── Table container ── */
+.table { display: flex; flex-direction: column; gap: 0; }
+
+/* Column headers — once at the top */
+.colHeaders {
+  display: grid;
+  grid-template-columns: 52px 1fr 48px 1fr;
+  padding: 0 14px 8px;
+  border-bottom: 1.5px solid var(--border);
+  margin-bottom: 8px;
+}
+.colRound {
+  font-size: 9px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+.colA {
+  font-size: 9px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--win-a);
+}
+.colB {
+  font-size: 9px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--win-b);
+  text-align: right;
+}
+
+/* ── List ── */
+.list { display: flex; flex-direction: column; gap: 6px; }
+
+/* ── Row ── */
+.row {
+  display: grid;
+  grid-template-columns: 52px 1fr 48px 1fr;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--bg-card-inner);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.row:hover {
+  border-color: var(--border-focus);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+
+/* Pokemon sides */
+.sideA {
+  display: flex; align-items: center; gap: 10px;
+}
+.sideB {
+  display: flex; align-items: center;
+  justify-content: flex-end; gap: 10px;
+}
+
+.sprite {
+  width: 42px; height: 42px;
+  image-rendering: pixelated; flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.pokeInfo {
+  display: flex; flex-direction: column; gap: 3px;
+}
+.pokeName {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.01em; line-height: 1;
+  white-space: nowrap;
+}
+/* Tambahkan/update class ini di History.module.css kamu */
+
+/* nama pokemon — win/lose/draw punya warna masing-masing */
+.nameWin  { color: var(--win-a); }
+.nameLose { color: var(--win-b); }   /* orange, bukan abu */
+.nameDraw { color: var(--text-secondary); }
+
+/* round number — geser kanan pakai padding */
+.roundNum {
+  padding-left: 8px;   /* ← naikin angka ini buat geser makin kanan */
+  min-width: 40px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 20px; font-weight: 800; line-height: 1;
+  color: var(--text-muted);
+}
+.status { display: flex; align-items: center; gap: 4px; }
+.statusText {
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 0.07em; text-transform: uppercase;
+}
+.statusWin  { color: var(--win-a); }
+.statusLose { color: var(--red); }
+.statusDraw { color: var(--text-muted); }
+
+/* Dots */
+.dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.dotWin {
+  background: var(--win-a);
+  box-shadow: 0 0 0 2px var(--win-a-dim), 0 0 6px var(--win-a-dim);
+}
+.dotLose { background: var(--red); }
+.dotDraw { background: var(--text-muted); }
+
+/* Sword divider */
+.sword {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  position: relative;
+}
+.sword::before,
+.sword::after {
+  content: '';
+  position: absolute; top: 50%;
+  width: 10px; height: 1px;
+  background: var(--border);
+}
+.sword::before { right: 100%; margin-right: 2px; }
+.sword::after  { left:  100%; margin-left:  2px; }
