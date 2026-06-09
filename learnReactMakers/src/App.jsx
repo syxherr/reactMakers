@@ -15,7 +15,7 @@ const WeatherAppPage = lazy(() => import("./Weather/WeatherAppPage"));
 const WeatherPage = lazy(() => import("./Weather/WeatherPage"));
 const PostPage = lazy(() => import("./post/post/PostPage"));
 const LuxoraShop = lazy(() => import("./luxora/Pages/Luxora"));
-const TaskDashboard = lazy(() => import("./TaskManagement/Board"));
+const TaskDashboard = lazy(() => import("./TaskManagement/component/Board"));
 
 function App() {
   const [isDark, setIsDark] = useState(() => {
@@ -39,6 +39,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
+      {/* 3. provider untuk semua halaman */}
       <UserProvider>
 
         <Navbar toggleTheme={toggleTheme} isDark={isDark} />

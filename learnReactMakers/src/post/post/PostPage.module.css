@@ -1,16 +1,13 @@
 /* ─── PAGE WRAPPER ───────────────────────────────────────────── */
-.page {
+.content {
   font-family: var(--font-serif);
   background: var(--bg);
   min-height: 100vh;
   padding: 32px 24px;
-  color: var(--text);
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-.content {
   max-width: 640px;
   margin: 0 auto;
+  color: var(--text);
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
 .pageTitle {

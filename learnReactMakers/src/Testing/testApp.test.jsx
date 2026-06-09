@@ -19,6 +19,8 @@ beforeEach(() => {
   localStorage.clear();
 });
 
+
+//1. mock
 vi.mock("swr", () => ({ default: vi.fn() }));
 import useSWR from "swr";
 
@@ -28,7 +30,10 @@ vi.mock("react-helmet-async", () => ({
   Helmet: () => null,
   HelmetProvider: ({ children }) => children,
 }));
-// Data dummy
+
+
+
+// 2. data dummy
 const mockCurrent = {
   name: "Bandung",
   sys: { country: "ID" },
@@ -44,29 +49,28 @@ const mockCurrent = {
   weather: [{ id: 800, description: "clear sky" }],
 };
 
-// Hanya 3 hari: Mon, Tue, Wed — sisanya "Coming Soon"
+// Hanya 3 hari, sisanya "Coming Soon"
 const mockForecast = {
   list: [
     {
       dt_txt: "2024-05-20 12:00:00",
       main: { temp: 300 },
       weather: [{ id: 800, description: "clear sky" }],
-    }, // Mon
+    },
     {
       dt_txt: "2024-05-21 12:00:00",
       main: { temp: 301 },
       weather: [{ id: 800, description: "clear sky" }],
-    }, // Tue
+    },
     {
       dt_txt: "2024-05-22 12:00:00",
       main: { temp: 302 },
       weather: [{ id: 800, description: "clear sky" }],
-    }, // Wed
+    },
   ],
 };
 
-// Helper mock SWR
-
+// 3. helper render
 function renderHome() {
   return render(
     <HelmetProvider>
@@ -99,90 +103,88 @@ function mockSWR({ currentErr = null, loading = false } = {}) {
   });
 }
 
-// ─── Tests ────────────────────────────────────────────────────────────────────
+// 4. tests
+describe("Halaman Home", () => {
 
-describe("HomeScreen", () => {
-  it("1. render button and input components", () => {
+  // Render UI
+  it("1. Menampilkan tombol dan input di halaman home", () => {
     renderHome();
-    expect(
-      screen.getByRole("button", { name: /submit name/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /submit name/i })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/your name/i)).toBeInTheDocument();
   });
 
-  it("updates the input value when the user types", () => {
+  // input
+  it("2. Interaksi/nilai input berubah saat user mengetik", () => {
     renderHome();
     const input = screen.getByPlaceholderText(/your name/i);
     fireEvent.change(input, { target: { value: "John Doe" } });
     expect(input.value).toBe("John Doe");
   });
 
-  it("clicking enter button after fill name will redirect to home screen", async () => {
-  renderHome();
-  fireEvent.change(screen.getByPlaceholderText(/your name/i), {
-    target: { value: "Shaskia" },
+  // navigasi
+  it("3. Navigasi ke halaman home setelah klik tombol dan isi nama", async () => {
+    renderHome();
+    fireEvent.change(screen.getByPlaceholderText(/your name/i), {
+      target: { value: "Shaskia" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /submit name/i }));
+    expect(
+      await screen.findByText(/what would you like to explore/i)
+    ).toBeInTheDocument();
   });
-  fireEvent.click(screen.getByRole("button", { name: /submit name/i }));
 
-  expect(
-    await screen.findByText(/what would you like to explore/i)
-  ).toBeInTheDocument();
-  });
 });
 
-describe("WeatherAppPage", () => {
-  // ── R1: Search input & button
-  describe("R1 – search input & button", () => {
+describe("Halaman Weather", () => {
+
+  // Render UI
+  describe("1. Render UI Search input & tombol", () => {
     beforeEach(() => mockSWR());
 
-    it("render search input w correct placeholder", () => {
+    it("1a. Menampilkan input search", () => {
       render(<WeatherAppPage />);
       expect(screen.getByPlaceholderText(/search city/i)).toBeInTheDocument();
     });
 
-    it("render search button", () => {
+    it("1b. Menampilkan tombol Search", () => {
       render(<WeatherAppPage />);
-      expect(
-        screen.getByRole("button", { name: /search/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /search/i })).toBeInTheDocument();
     });
   });
 
-  // ── T2: Error message ──────────────────────────────────────────────────────
-  describe("T2 – Error message", () => {
-    it("render an error message when fetch fail", async () => {
+  // Error Message
+  describe("2. Error Message saat fetch gagal", () => {
+    it("2a. Menampilkan pesan 'Try another city' saat fetch gagal", async () => {
       mockSWR({ currentErr: new Error("Fetch failed") });
       render(<WeatherAppPage />);
       expect(await screen.findByText(/try another city/i)).toBeInTheDocument();
     });
   });
 
-  // ── R5: Data suhu tampil ───────────────────────────────────────────────────
-  describe("R5 – Temperature data rendered to DOM", () => {
+  // Tampilan Data Suhu DOM
+  describe("3. Data cuaca tampil", () => {
     beforeEach(() => mockSWR());
 
-    it("temperature data rendered 27 from 300K", async () => {
+    it("3a. Menampilkan suhu 27°C dari konversi 300K", async () => {
       render(<WeatherAppPage />);
       expect(await screen.findByText("27")).toBeInTheDocument();
       expect(screen.getByText("°C")).toBeInTheDocument();
     });
 
-    it("renders the city name from the API", async () => {
+    it("3b. Menampilkan nama kota dari data API", async () => {
       render(<WeatherAppPage />);
       expect(await screen.findByText(/Bandung, ID/i)).toBeInTheDocument();
     });
   });
 
-  // ── D5: weeklyData per hari ───────────────────────────────────────────────
-  describe("D5 – weeklyData per week", () => {
+  // Data Mingguan
+  describe("4. Data mingguan (weeklyData)", () => {
     const DAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     function buildWeeklyData(forecastList) {
       const forecastByDay = forecastList.reduce((acc, item) => {
         const d = new Date(item.dt_txt.replace(" ", "T"));
-        const name = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
-          d.getDay()
-        ];
+        const name = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()];
         if (!acc[name]) acc[name] = item;
         return acc;
       }, {});
@@ -196,25 +198,26 @@ describe("WeatherAppPage", () => {
       });
     }
 
-    it("show exactly 7 days", () => {
+    it("4a. Menampilkan tepat 7 hari", () => {
       expect(buildWeeklyData(mockForecast.list)).toHaveLength(7); //ganti
     });
 
-    it("days available in the forecast should contain numeric temperatures", () => {
+    it("4b. Hari yang ada di forecast memiliki suhu", () => {
       const result = buildWeeklyData(mockForecast.list);
       const withTemp = result.filter((d) => typeof d.temp === "number");
       expect(withTemp.length).toBeGreaterThan(0);
     });
 
-    it("days that not available in the forecast should display 'Coming Soon'", () => {
-      // Forecast hanya punya beberapa hari, sisanya Coming Soon
-      const result = buildWeeklyData(mockForecast.list.slice(0, 5));
+    it("4c. Hari yang tidak ada di forecast menampilkan 'Coming Soon'", () => {
+      const result = buildWeeklyData(mockForecast.list);
       const comingSoon = result.filter((d) => d.temp === "Coming Soon");
       expect(comingSoon.length).toBeGreaterThan(0);
     });
   });
 
-  it("show correct emoji based on the weather id", () => {
+  // Helper Emoji
+  it("5. Menampilkan emoji yang sesuai berdasarkan weather id", () => {
     expect(getWeatherEmoji(800)).toBe("☀️");
   });
+
 });

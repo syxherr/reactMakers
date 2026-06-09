@@ -14,6 +14,8 @@ const PRODUCTS = [
 ];
 
 type Product = (typeof PRODUCTS)[0];
+
+//1. mencegah kesalahan tipe data
 type CartItem = Product & { qty: number };
 
 type State = {
@@ -24,6 +26,7 @@ type State = {
   notification: { message: string } | null;
 };
 
+//3. mencegah action reducer yang tidak valid
 type Action =
   | { type: "ADD_TO_CART"; product: Product }
   | { type: "REMOVE_FROM_CART"; id: number }
@@ -96,8 +99,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-/* ─── ProductCard ────────────────────────────────────────────── */
-
+//2. mencegah kesalahan props
 interface ProductCardProps {
   product: Product;
   onAdd: (product: Product) => void;
@@ -152,7 +154,7 @@ interface CartDrawerProps {
 function CartDrawer({ cart, onClose, onChangeQty, onRemove }: CartDrawerProps) {
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const headingId = "cart-drawer-title";
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null); //4. coding lebih aman dengan memastikan ref tidak null sebelum digunakan
 
   useEffect(() => { closeRef.current?.focus(); }, []);
 

@@ -5,30 +5,39 @@ const uid = () => Math.random().toString(36).slice(2, 9);
 
 const SAMPLE_TASKS = [];
 
-const useTaskStore = create(
-  persist(
+const useTaskStore = create( //1. bikin stor
+  
+  persist( // disimpan di local storage
     (set, get) => ({
       tasks: SAMPLE_TASKS,
-
-      // filter state
       search: "",
       priority: "all",
 
       setSearch: (v) => set({ search: v }),
       setPriority: (v) => set({ priority: v }),
 
-      // task actions
+
+      //3. addTask di zustand store dijalankan
       addTask: (task) =>
         set((state) => ({ tasks: [...state.tasks, { id: uid(), ...task }] })),
 
-      loadTasks: (tasks) => set({ tasks }),
-      editTask: (id, patch) =>
+      loadTasks: (tasks) => set({ tasks }), //load task sesuai local storage user
+
+      editTask: (
+        id,
+        patch, //edit tugas by id
+      ) =>
         set((state) => ({
           tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t)),
         })),
+
       deleteTask: (id) =>
         set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) })),
-      moveTask: (id, dir) =>
+
+      moveTask: (
+        id,
+        dir, //pindah ke progres
+      ) =>
         set((state) => {
           const cols = ["todo", "doing", "done"];
           return {
@@ -40,7 +49,7 @@ const useTaskStore = create(
           };
         }),
 
-      // derived — filtered tasks
+      // filter sesuai search dan priority
       getFiltered: () => {
         const { tasks, search, priority } = get();
         return tasks.filter((t) => {

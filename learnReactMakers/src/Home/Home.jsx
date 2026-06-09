@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { to: "/dashboard", label: "Task Dashboard" },
 ];
 
+//5. useUser dipakai di Home
 function NameForm() {
   const { saveUser } = useUser();
   const [input, setInput] = useState("");
@@ -91,7 +92,6 @@ function Home() {
   const { user } = useUser();
   const headingRef = useRef(null);
 
-  // Focus heading after login
   useEffect(() => {
     if (user.isLoggedIn) {
       headingRef.current?.focus();
@@ -107,7 +107,6 @@ function Home() {
     };
   }, []);
 
-  // Keyboard shortcut lifecycle
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "/") {
@@ -134,7 +133,6 @@ function Home() {
           content="Explore Todo, Weather, Post, and Luxora Shop applications from one page."
         />
 
-        {/* Open Graph */}
         <meta property="og:title" content="Home" />
 
         <meta
@@ -144,7 +142,9 @@ function Home() {
 
         <meta property="og:type" content="website" />
       </Helmet>
-
+      
+      
+      {/* 6. nama tampil */}
       {!user.isLoggedIn ? (
         <NameForm />
       ) : (

@@ -21,7 +21,7 @@ function saveUser(user) {
 
 export const UserContext = createContext(null); // wadah
 
-// state nama user disimpan di sini
+// 2. state nama user disimpan di sini
 export function UserProvider({ children }) {
   const [user, setUser] = useState(getUserFromLocalStorage());
 

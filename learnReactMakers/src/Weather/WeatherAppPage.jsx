@@ -8,16 +8,19 @@ const PixelSnow = lazy(() => import("../style/effect/PixelSnow"));
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
+// 5. mengubah balasan dari server menjadi JavaScript
 const fetcher = (url) =>
   fetch(url).then((r) => {
     if (!r.ok) throw new Error("Failed to fetch weather data");
     return r.json();
   });
 
+// 7. kelvin ke celsius
 function kelvinToCelsius(k) {
   return Math.round(k - 273.15);
 }
 
+// 8. id cuaca diubah jadi emoji
 export function getWeatherEmoji(id) {
   if (id >= 200 && id < 300) return "⛈️";
   if (id >= 300 && id < 400) return "🌦️";
@@ -29,6 +32,7 @@ export function getWeatherEmoji(id) {
   return "🌡️";
 }
 
+// 9. id cuaca diubah jadi teks
 export function getWeatherLabel(id) {
   if (id >= 200 && id < 300) return "Thunderstorm";
   if (id >= 300 && id < 400) return "Drizzle";
@@ -208,7 +212,7 @@ export default function WeatherAppPage() {
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState("hourly");
   const [cityInput, setCityInput] = useState("Bandung");
-  const [city, setCity] = useState("Bandung");
+  const [city, setCity] = useState("Bandung"); // 3. nama kota disimpan variabel city
   const [snowReady, setSnowReady] = useState(false);
 
   useEffect(() => {
@@ -224,8 +228,10 @@ export default function WeatherAppPage() {
 
   const snowColor = useMemo(() => theme.snow, [theme.snow]);
 
+  //4. mengirim request HTTP ke server OpenWeather
   const {
-    data: current,
+    // fetching cuaca saat ini
+    data: current, //
     error: currentErr,
     isLoading: currentLoading,
   } = useSWR(
@@ -235,6 +241,7 @@ export default function WeatherAppPage() {
   );
 
   const {
+    // fetching ramalan cuaca 5 hari ke depan
     data: forecast,
     error: forecastErr,
     isLoading: forecastLoading,
@@ -255,12 +262,16 @@ export default function WeatherAppPage() {
     : [];
 
   const DAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const todayName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][new Date().getDay()];
+  const todayName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
+    new Date().getDay()
+  ];
 
   const forecastByDay = forecast
     ? forecast.list.reduce((acc, item) => {
         const d = new Date(item.dt_txt.replace(" ", "T"));
-        const name = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()];
+        const name = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
+          d.getDay()
+        ];
         if (!acc[name]) acc[name] = item;
         return acc;
       }, {})
@@ -277,6 +288,7 @@ export default function WeatherAppPage() {
     };
   });
 
+  //2. handleSearch memindahkan nama kota
   function handleSearch() {
     if (cityInput.trim()) setCity(cityInput.trim());
   }
@@ -285,6 +297,7 @@ export default function WeatherAppPage() {
     if (e.key === "Enter") handleSearch();
   }
 
+  // 6. data mentah diubah jadi angka
   const tempNow = current ? kelvinToCelsius(current.main.temp) : null;
   const feelsLike = current ? kelvinToCelsius(current.main.feels_like) : null;
   const tempMax = current ? kelvinToCelsius(current.main.temp_max) : null;
@@ -318,14 +331,19 @@ export default function WeatherAppPage() {
   return (
     <>
       <Helmet>
-        <title>Real-Time Weather Forecast</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
+        <title>Real-Time Weather Forecast</title> {/* seo 1. Dynamic Title */}
+        <meta name="description" content={pageDescription} />{" "}
+        {/* seo 2. Meta Description */}
+        <meta property="og:title" content={pageTitle} />{" "}
+        {/* seo 3. Open Graph */}
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
       </Helmet>
 
+      {/* a11y 1. screen reader */}
       <main className={styles.container} aria-label="Weather application">
+        {" "}
+        
         <div className={styles.snowWrap} aria-hidden="true">
           {snowReady && (
             <Suspense fallback={null}>
@@ -346,7 +364,6 @@ export default function WeatherAppPage() {
             </Suspense>
           )}
         </div>
-
         <div className={styles.root}>
           <div className={styles.wrapper}>
             <div className={styles.searchRow} role="search">
@@ -366,6 +383,10 @@ export default function WeatherAppPage() {
                   aria-label="City name"
                 />
               </div>
+              {/* a11y 2. atribut aria-label */}
+
+              {/* a11y 3. Accessible Search Button */}
+              {/* 1. handleSearch dipanggil */}
               <button
                 className={styles.searchBtn}
                 onClick={handleSearch}
@@ -375,11 +396,16 @@ export default function WeatherAppPage() {
               </button>
             </div>
 
+            {/* a11y 4. Error Announcement */}
             {isError && (
               <div
                 role="alert"
                 aria-live="assertive"
-                style={{ color: "#ffaaaa", padding: "0.5rem 0", fontSize: "0.85rem" }}
+                style={{
+                  color: "#ffaaaa",
+                  padding: "0.5rem 0",
+                  fontSize: "0.85rem",
+                }}
               >
                 City not found. Please try another city name.
               </div>
@@ -393,9 +419,13 @@ export default function WeatherAppPage() {
               <div className={styles.mainPanel}>
                 <div className={styles.locationMeta}>
                   <span className={styles.pinIcon} aria-hidden="true">
+                    {" "}
                     <IconPin />
                   </span>
-                  <span aria-label={`Location: ${currentLoading ? "loading" : cityName}, ${today}`}>
+                  <span
+                    aria-label={`Location: ${currentLoading ? "loading" : cityName}, ${today}`}
+                  >
+                    {" "}
                     {currentLoading ? (
                       <Skeleton width="120px" height="0.85rem" />
                     ) : (
@@ -419,30 +449,46 @@ export default function WeatherAppPage() {
                           : `Temperature: ${tempNow} degrees Celsius`
                       }
                     >
-                      {currentLoading ? <Skeleton width="60px" height="3rem" /> : tempNow}
+                      {currentLoading ? (
+                        <Skeleton width="60px" height="3rem" />
+                      ) : (
+                        tempNow
+                      )}
                     </span>
-                    <span className={styles.tempDeg} aria-hidden="true">°C</span>
+                    <span className={styles.tempDeg} aria-hidden="true">
+                      °C
+                    </span>
                   </div>
 
                   <div className={styles.tempDesc}>
                     {currentLoading ? (
                       <Skeleton width="180px" height="0.9rem" />
                     ) : (
-                      <>{weatherDesc} &nbsp;·&nbsp; Feels like {feelsLike}°C</>
+                      <>
+                        {weatherDesc} &nbsp;·&nbsp; Feels like {feelsLike}°C
+                      </>
                     )}
                   </div>
 
                   <div className={styles.hiLo}>
                     <span
                       className={styles.hi}
-                      aria-label={currentLoading ? "Loading high temperature" : `High: ${tempMax} degrees`}
+                      aria-label={
+                        currentLoading
+                          ? "Loading high temperature"
+                          : `High: ${tempMax} degrees`
+                      }
                     >
                       <span aria-hidden="true">↑</span>{" "}
                       {currentLoading ? " " : `${tempMax}°`}
                     </span>
                     <span
                       className={styles.lo}
-                      aria-label={currentLoading ? "Loading low temperature" : `Low: ${tempMin} degrees`}
+                      aria-label={
+                        currentLoading
+                          ? "Loading low temperature"
+                          : `Low: ${tempMin} degrees`
+                      }
                     >
                       <span aria-hidden="true">↓</span>{" "}
                       {currentLoading ? " " : `${tempMin}°`}
@@ -451,16 +497,45 @@ export default function WeatherAppPage() {
                 </div>
               </div>
 
-              <StatCard icon={<IconDroplet />} value={humidity} unit="%" label="Humidity" loading={currentLoading} />
-              <StatCard icon={<IconWind />} value={windSpeed} unit="km/h" label="Wind Speed" loading={currentLoading} />
-              <StatCard icon={<IconEye />} value={visibility} unit="km" label="Visibility" loading={currentLoading} />
-              <StatCard icon={<IconSun />} value="—" label="UV Index" accent loading={false} />
+              <StatCard
+                icon={<IconDroplet />}
+                value={humidity}
+                unit="%"
+                label="Humidity"
+                loading={currentLoading}
+              />
+              <StatCard
+                icon={<IconWind />}
+                value={windSpeed}
+                unit="km/h"
+                label="Wind Speed"
+                loading={currentLoading}
+              />
+              <StatCard
+                icon={<IconEye />}
+                value={visibility}
+                unit="km"
+                label="Visibility"
+                loading={currentLoading}
+              />
+              <StatCard
+                icon={<IconSun />}
+                value="—"
+                label="UV Index"
+                accent
+                loading={false}
+              />
             </div>
 
             <div className={styles.tabRow}>
-              <div className={styles.blurLayer} role="tablist" aria-label="Forecast view">
+              <div
+                className={styles.blurLayer}
+                role="tablist"
+                aria-label="Forecast view"
+              >
                 <button
                   id={hourlyTabId}
+                  // a11y 5. Accessible Tabs
                   role="tab"
                   aria-selected={activeTab === "hourly"}
                   aria-controls={hourlyPanelId}
@@ -502,9 +577,17 @@ export default function WeatherAppPage() {
               <div className={styles.hourlyScroll}>
                 {forecastLoading
                   ? Array.from({ length: 7 }).map((_, i) => (
-                      <div key={i} className={styles.hourSlot} aria-hidden="true">
+                      <div
+                        key={i}
+                        className={styles.hourSlot}
+                        aria-hidden="true"
+                      >
                         <Skeleton width="36px" height="0.75rem" />
-                        <Skeleton width="24px" height="24px" style={{ borderRadius: 4, margin: "4px 0" }} />
+                        <Skeleton
+                          width="24px"
+                          height="24px"
+                          style={{ borderRadius: 4, margin: "4px 0" }}
+                        />
                         <Skeleton width="32px" height="0.75rem" />
                       </div>
                     ))
@@ -514,8 +597,12 @@ export default function WeatherAppPage() {
                         className={`${styles.hourSlot} ${h.now ? styles.now : ""}`}
                         aria-label={`${h.label}: ${h.weatherLabel}, ${h.temp !== null ? h.temp + " degrees" : "no data"}`}
                       >
-                        <span className={styles.hourLabel} aria-hidden="true">{h.label}</span>
-                        <span className={styles.hourIcon} aria-hidden="true">{h.icon}</span>
+                        <span className={styles.hourLabel} aria-hidden="true">
+                          {h.label}
+                        </span>
+                        <span className={styles.hourIcon} aria-hidden="true">
+                          {h.icon}
+                        </span>
                         <span
                           className={`${styles.hourTemp} ${h.temp === "Coming Soon" ? styles.comingSoon : ""}`}
                           aria-hidden="true"
@@ -537,9 +624,17 @@ export default function WeatherAppPage() {
               <div className={styles.hourlyScroll}>
                 {forecastLoading
                   ? Array.from({ length: 7 }).map((_, i) => (
-                      <div key={i} className={styles.hourSlot} aria-hidden="true">
+                      <div
+                        key={i}
+                        className={styles.hourSlot}
+                        aria-hidden="true"
+                      >
                         <Skeleton width="36px" height="0.75rem" />
-                        <Skeleton width="24px" height="24px" style={{ borderRadius: 4, margin: "4px 0" }} />
+                        <Skeleton
+                          width="24px"
+                          height="24px"
+                          style={{ borderRadius: 4, margin: "4px 0" }}
+                        />
                         <Skeleton width="32px" height="0.75rem" />
                       </div>
                     ))
@@ -549,8 +644,12 @@ export default function WeatherAppPage() {
                         className={`${styles.hourSlot} ${w.isToday ? styles.now : ""}`}
                         aria-label={`${w.isToday ? "Today, " : ""}${w.day}: ${w.weatherLabel}, ${typeof w.temp === "number" ? w.temp + " degrees" : w.temp}`}
                       >
-                        <span className={styles.hourLabel} aria-hidden="true">{w.day}</span>
-                        <span className={styles.hourIcon} aria-hidden="true">{w.icon}</span>
+                        <span className={styles.hourLabel} aria-hidden="true">
+                          {w.day}
+                        </span>
+                        <span className={styles.hourIcon} aria-hidden="true">
+                          {w.icon}
+                        </span>
                         <span
                           className={`${styles.hourTemp} ${w.temp === "Coming Soon" ? styles.comingSoon : ""}`}
                           aria-hidden="true"
@@ -561,7 +660,6 @@ export default function WeatherAppPage() {
                     ))}
               </div>
             </div>
-
           </div>
         </div>
       </main>
