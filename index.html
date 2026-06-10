@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/reactMakers/pokeArena/pokeball.svg" />
+    <link rel="preconnect" href="https://pokeapi.co" />
+    <link rel="preconnect" href="https://raw.githubusercontent.com" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=...&display=swap"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokemon Arena</title>
+
+    <script>
+      (function () {
+        const theme = localStorage.getItem("poke-theme") || "dark";
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
+    <script type="module" crossorigin src="/reactMakers/pokeArena/assets/index-DYH9pao3.js"></script>
+    <link rel="stylesheet" crossorigin href="/reactMakers/pokeArena/assets/index-CRvmmRq9.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
