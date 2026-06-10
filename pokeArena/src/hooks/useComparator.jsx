@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { usePokemonStore } from "../store/pokemonStore";
 
 const STAT_KEYS = [
   "hp", "attack", "defense",
@@ -6,23 +7,14 @@ const STAT_KEYS = [
 ];
 
 export function useComparator() {
-  const [selected, setSelected]             = useState([null, null]);
-  const [statsVisible, setStatsVisible]     = useState(false);
-  const [historyVisible, setHistoryVisible] = useState(false);
-  const [overlayPhase, setOverlayPhase]     = useState(null);
-  const [history, setHistory]               = useState(() => {
-    try {
-      const saved = localStorage.getItem("battle_history");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  })
+  const [selected, setSelected]         = useState([null, null]);
+  const [statsVisible, setStatsVisible] = useState(false);
+  const [overlayPhase, setOverlayPhase] = useState(null);
 
-  useEffect(() => {
-    localStorage.setItem("battle_history", JSON.stringify(history));
-  }, [history]);
-
+  const history     = usePokemonStore((state) => state.history);
+  const addHistory  = usePokemonStore((state) => state.addHistory);
+  const clearHistory = usePokemonStore((state) => state.clearHistory);
+  
   function selectPokemon(slot, pokemon) {
     setSelected((prev) => {
       const next = [...prev];
@@ -30,7 +22,6 @@ export function useComparator() {
       return next;
     });
     setStatsVisible(false);
-    setHistoryVisible(false);
     setOverlayPhase(null);
   }
 
@@ -40,7 +31,6 @@ export function useComparator() {
 
     setOverlayPhase("begin");
     setStatsVisible(false);
-    setHistoryVisible(false);
 
   }
 
@@ -55,34 +45,24 @@ export function useComparator() {
 
   // 6. history 
   function onWinnerDismiss() {
-    setOverlayPhase(null);
-    setHistoryVisible(true);
     const [a, b] = selected;
     const { statusA, statusB } = calcWinner(a, b);
-    setHistory((prev) => [ // hasil battle masuk ke history
-      { nameA: a.name, nameB: b.name, statusA, statusB },
-      ...prev,
-    ]);
+    addHistory({ nameA: a.name, nameB: b.name, statusA, statusB }); // ← pakai store
+    setOverlayPhase(null);
   }
 
   // 7. reset pokemon
   function reset() {
     setSelected([null, null]);
     setStatsVisible(false);
-    setHistoryVisible(true);
     setOverlayPhase(null);
   }
 
-  // 7. reset history
-  function clearHistory() {
-    setHistory([]);
-    localStorage.removeItem("battle_history")
-  }
+  
 
   return {
     selected,
     statsVisible,
-    historyVisible,
     overlayPhase,
     history,
     selectPokemon,

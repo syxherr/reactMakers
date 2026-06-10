@@ -12,12 +12,14 @@ import {
   useState,
 } from "react";
 import PokemonPicker from "./components/picker/PokemonPicker.jsx";
-import History from "./components/history/History.jsx";
 import styles from "./App.module.css";
 import { calcWinner } from "./hooks/useComparator.jsx";
 import BattleOverlay from "./components/battle/BattleOverlay.jsx";
 import { fetchPokemonDetail } from "./hooks/usePokemon.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import Loading from "./components/Loading.jsx";
 
+const History = lazy(() => import("./components/history/History.jsx"));
 const StatsSection = lazy(() => import("./components/battle/Statssection.jsx"));
 
 const STRUCTURED_DATA = {
@@ -99,21 +101,15 @@ export default function App() {
     [selected],
   );
 
-  const pageTitle = useMemo(() => {
-    if (selected[0] && selected[1])
-      return `${selected[0].name} vs ${selected[1].name} — Pokemon Arena`;
-    return "Pokemon Arena";
-  }, [selected]);
-
   return (
     <>
       <Helmet>
-        <title>{pageTitle}</title>
+        <title>Pokemon Arena</title>
         <meta
           name="description"
           content="Pick two Pokémon and start the battle!"
         />
-        <meta property="og:title" content={pageTitle} />
+        <meta property="og:title" content="Pokemon Arena" />
         <meta
           property="og:description"
           content="Pick two Pokémon and start the battle!"
@@ -180,7 +176,8 @@ export default function App() {
               onClick={handleRandom}
               disabled={listLoading}
               aria-label="Pick two random Pokémon"
-            >{randomLoading}
+            >
+              {randomLoading}
               Random
             </button>
             <button
@@ -194,31 +191,27 @@ export default function App() {
           </div>
 
           {statsVisible && selected[0] && selected[1] && (
-            <Suspense
-              fallback={
-                <div
-                  classname={styles.statsLoading}
-                  role="status"
-                  aria-label="Loading Battle"
-                >
-                  Loading Stats
+            <ErrorBoundary>
+              <Suspense fallback={<Loading />}>
+                <div ref={statsRef} tabIndex={-1} aria-label="Battle results">
+                  <StatsSection
+                    pokemonA={selected[0]}
+                    pokemonB={selected[1]}
+                    onComplete={onStatsComplete}
+                  />
                 </div>
-              }
-            >
-              <div ref={statsRef} tabIndex={-1} aria-label="Battle results">
-                <StatsSection
-                  pokemonA={selected[0]}
-                  pokemonB={selected[1]}
-                  onComplete={onStatsComplete}
-                />
-              </div>
-            </Suspense>
+              </Suspense>
+            </ErrorBoundary>
           )}
         </section>
 
         {history.length > 0 && (
           <section className={styles.card} aria-label="Battle history">
-            <History entries={history} onClear={clearHistory} />
+            <ErrorBoundary>
+              <Suspense fallback={<Loading />}>
+                <History entries={history} onClear={clearHistory} />
+              </Suspense>
+            </ErrorBoundary>
           </section>
         )}
       </div>

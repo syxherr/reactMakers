@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, useCallback, useMemo, memo, useId } from "react";
-
+import ErrorBoundary from "../ErrorBoundary.jsx";
 import { fetchPokemonDetail } from "../../hooks/usePokemon.jsx";
 import styles from "./PokemonPicker.module.css";
 import SwordAltIcon from "../../style/SwordAltIcon";
+import Loading from "../Loading.jsx"
 
 const TYPE_COLORS = {
   fire: "#FF6B35",
@@ -219,17 +220,7 @@ const PokemonCard = memo(function PokemonCard({ pokemon, loading, side }) {
   if (loading) {
     return (
       <div className={`${styles.card} ${styles[side]}`}>
-        <img
-          src="/pokeball.svg"
-          alt=""
-          className="pokeball"
-          width={48}
-          height={48}
-        />
-
-        <p className="loading-text" role="status" aria-live="polite">
-          Catching Pokemon
-        </p>
+        <Loading />
       </div>
     );
   }
@@ -249,6 +240,7 @@ const PokemonCard = memo(function PokemonCard({ pokemon, loading, side }) {
   }
 
   return (
+    <ErrorBoundary>
     <article
       className={`${styles.card} ${styles[side]}`}
       aria-label={`${capitalize(pokemon.name)} — selected as ${side === "left" ? "Challenger 1" : "Challenger 2"}`}
@@ -276,6 +268,7 @@ const PokemonCard = memo(function PokemonCard({ pokemon, loading, side }) {
         </div>
       </div>
     </article>
+    </ErrorBoundary>
   );
 });
 

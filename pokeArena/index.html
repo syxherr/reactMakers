@@ -4,11 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/pokeball.svg" />
     <link rel="preconnect" href="https://pokeapi.co" />
-  <link rel="preconnect" href="https://raw.githubusercontent.com" />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=...&display=swap" />
-
+    <link rel="preconnect" href="https://raw.githubusercontent.com" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=...&display=swap"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokemon Arena</title>
+
+    <script>
+      (function () {
+        const theme = localStorage.getItem("poke-theme") || "dark";
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
