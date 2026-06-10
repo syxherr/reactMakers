@@ -2,11 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
+  base: "reactMakers/pokeArena",
   plugins: [react()],
 
   server: {
     watch: {
-      usePolling: true, // fix HMR di beberapa environment Windows
+      usePolling: true,
     },
   },
 });
